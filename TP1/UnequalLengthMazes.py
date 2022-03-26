@@ -39,81 +39,53 @@ def isFinalState(state):
         return False
   return row == 0 and col == W-1 and length != lastSegment
 
+propDir = {
+  'up': (-1, 0),
+  'down': (1, 0),
+  'left': (0, -1),
+  'right': (0, 1)
+}
 
+def edge(dir, row, col):
+  if dir == 'up':
+    return row > 0
+  elif dir == 'down':
+    return row < H-1
+  elif dir == 'left':
+    return col > 0
+  elif dir== 'right':
+    return col < W-1
+  return False
 
-def up(state):
+def canSwap(nextDir, prevDir):
+  if nextDir == 'up' or nextDir == 'down':
+    return prevDir == 'left' or prevDir == 'right'
+  elif nextDir == 'left' or nextDir == 'right':
+    return prevDir == 'up' or prevDir == 'down'
+  return False
+    
+
+def move(state, direction):
   (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if row > 0 and dir == 'up' and board[row-1][col] == EC:
-    row -= 1
+  step = propDir[direction]
+  if edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC:
+    row += step[0]
+    col += step[1]
     board[row][col] = VC
     length += 1
     return (board, (row,col,dir,length), lastSegment)
   return False
-  
-def down(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if row < H-1 and dir == 'down' and board[row+1][col] == EC:
-    row += 1
-    board[row][col] = VC
-    length += 1
-    return (board, (row,col,dir,length), lastSegment)
-  return False
 
-def left(state):
+def swap(state, direction):
   (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if col > 0 and dir == 'left' and board[row][col-1] == EC:
-    col -= 1
-    board[row][col] = VC
-    length += 1
-    return (board, (row,col,dir,length), lastSegment)
-  return False
-  
-def right(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if col < W-1 and dir == 'right' and board[row][col+1] == EC:
-    col += 1
-    board[row][col] = VC
-    length += 1
-    return (board, (row,col,dir,length), lastSegment)
-  return False
-
-def swapToUp(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if ((length != lastSegment and length != 0 and (dir == 'left' or dir == 'right')) or lastSegment == None):
-    dir = 'up'
+  if ((length != lastSegment and length != 0 and canSwap(direction, dir)) or lastSegment == None):
+    dir = direction
     lastSegment = length
     length = 0
     return (board, (row,col,dir,length), lastSegment)
   return False
 
-def swapToDown(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if ((length != lastSegment and length != 0 and (dir == 'left' or dir == 'right')) or lastSegment == None):
-    dir = 'down'
-    lastSegment = length
-    length = 0
-    return (board, (row,col,dir,length), lastSegment)
-  return False
 
-def swapToLeft(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if ((length != lastSegment and length != 0 and (dir == 'up' or dir == 'down')) or lastSegment == None):
-    dir = 'left'
-    lastSegment = length
-    length = 0
-    return (board, (row,col,dir,length), lastSegment)
-  return False
-
-def swapToRight(state):
-  (board, (row,col,dir,length), lastSegment) = deepcopy(state)
-  if ((length != lastSegment and length != 0 and (dir == 'up' or dir == 'down')) or lastSegment == None):
-    dir = 'right'
-    lastSegment = length
-    length = 0
-    return (board, (row,col,dir,length), lastSegment)
-  return False
-
-operators = [up, down, left, right, swapToUp, swapToDown, swapToLeft, swapToRight]
 
 def heuristics(state, currCost, type):
   '''Function with the different heuristics that can be used. '''
@@ -129,7 +101,7 @@ def newTransitions(node: Tree.Node, algorithm, heuristic, cut=-1):
     return []
 
   # To change between problems if needed
-  transitionsStates = [op(state) for op in operators]
+  transitionsStates = [move(state, direction) for direction in propDir.keys()] + [swap(state, direction) for direction in propDir.keys()]
   transitionsStates = list(filter(lambda state : state, transitionsStates))
   # ------------------------------------
 
