@@ -89,10 +89,25 @@ def swap(state, direction):
 
 def heuristics(state, type):
   '''Function with the different heuristics that can be used. '''
-  
+  def manhattan(x1, y1, x2, y2):
+    return abs(x2-x1) + abs(y2-y1)
+
+  (_, (row, col, _, _), _) = state
+  if type == 1:
+    dist = manhattan(row, col, 0, W-1)
+    if dist == 0: return 0
+    else: return 1/dist
+  if type == 2:
+    totalDist = 0
+    for i in range(len(board)):
+      for j in range(len(board[i])):
+        if (board[i][j] == EC):
+          totalDist += manhattan(i, j, 0, W-1)
+    if totalDist == 0: return 0
+    else: return 1/totalDist
   return 0
 
-def newTransitions(node: Tree.Node, algorithm, heuristic, cut=-1):
+def newTransitions(node: Tree.Node, heuristic, cut=-1):
   '''Find reachable nodes from node. Returns only the values of the nodes to be created on SearchProblem.'''
   state = node.state
 
@@ -105,6 +120,6 @@ def newTransitions(node: Tree.Node, algorithm, heuristic, cut=-1):
   for movement in transitionsMoves:
     newState = movement["state"]
     newCost = movement["cost"]
-    newHeuristic = heuristics(state, heuristic)
+    newHeuristic = heuristics(newState, heuristic)
     transitions.append(Tree.Node(newState, node.depth+1, node.cost+newCost, newHeuristic, node))
   return transitions

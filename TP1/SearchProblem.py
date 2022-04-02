@@ -13,8 +13,7 @@ algorithmTypes = {
 class SearchProblem:
   def __init__(self, initState, isFinalState):
     self.initState = initState
-    self.initNode = Tree.Node(initState, 0, 0, 0, -1)
-    self.queue = [self.initNode]
+    self.queue = [Tree.Node(initState, 0, 0, 0, -1)]
     self.isFinalState = isFinalState
     self.visited = []
   
@@ -60,7 +59,7 @@ class SearchProblem:
       if self.isFinalState(currentState):
         break
 
-      currTransitions = newTransitions(currentNode, algorithm, heuristic, cut)
+      currTransitions = newTransitions(currentNode, heuristic, cut)
       currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
