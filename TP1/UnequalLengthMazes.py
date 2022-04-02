@@ -1,31 +1,20 @@
 import Tree
 from copy import deepcopy
-from SearchProblem import algorithmTypes
 
 EC = 0
 VC = 1
 BC = 9
 
-board = [[EC, EC, BC, BC, EC, EC],
-         [EC, EC, EC, EC, EC, BC],
-         [EC, EC, EC, EC, EC, EC],
-         [EC, EC, EC, EC, EC, EC],
-         [EC, EC, EC, EC, EC, EC],
-         [VC, EC, EC, EC, EC, EC]]
-board1 = [[BC, BC, EC],
-          [EC, EC, EC],
-          [VC, BC, BC]]
-board2 = [[BC, EC, EC],
-          [BC, EC, BC],
-          [VC, EC, BC]]
+initBoard = [[EC, EC, BC, BC, EC, EC],
+             [EC, EC, EC, EC, EC, BC],
+             [EC, EC, EC, EC, EC, EC],
+             [EC, EC, EC, EC, EC, EC],
+             [EC, EC, EC, EC, EC, EC],
+             [VC, EC, EC, EC, EC, EC]]
 
-board3 = [[EC, EC, EC, EC],
-          [EC, EC, EC, BC],
-          [VC, EC, EC, BC]]
-
-initBoard = board
 H = len(initBoard)
 W = len(initBoard[0])
+
 currentCell = (H-1, 0, None, 0)
 lastSegment = None
 
@@ -97,17 +86,9 @@ def heuristics(state, type):
     dist = manhattan(row, col, 0, W-1)
     if dist == 0: return 0
     else: return 1/dist
-  if type == 2:
-    totalDist = 0
-    for i in range(len(board)):
-      for j in range(len(board[i])):
-        if (board[i][j] == EC):
-          totalDist += manhattan(i, j, 0, W-1)
-    if totalDist == 0: return 0
-    else: return 1/totalDist
   return 0
 
-def newTransitions(node: Tree.Node, heuristic, cut=-1):
+def newTransitions(node: Tree.Node, heuristic):
   '''Find reachable nodes from node. Returns only the values of the nodes to be created on SearchProblem.'''
   state = node.state
 
