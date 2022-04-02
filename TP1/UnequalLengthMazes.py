@@ -73,7 +73,7 @@ def move(state, direction):
     col += step[1]
     board[row][col] = VC
     length += 1
-    return (board, (row,col,dir,length), lastSegment)
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 1}
   return False
 
 def swap(state, direction):
@@ -82,32 +82,29 @@ def swap(state, direction):
     dir = direction
     lastSegment = length
     length = 0
-    return (board, (row,col,dir,length), lastSegment)
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 0}
   return False
 
 
 
-def heuristics(state, currCost, type):
+def heuristics(state, type):
   '''Function with the different heuristics that can be used. '''
-  return currCost
+  
+  return 0
 
 def newTransitions(node: Tree.Node, algorithm, heuristic, cut=-1):
   '''Find reachable nodes from node. Returns only the values of the nodes to be created on SearchProblem.'''
-  state = node.value[0]
-  cost = node.value[1] + 1 if algorithm != algorithmTypes["greedy"] else 0
-  
-  cost = node.value[1] - 1 if algorithm == algorithmTypes["depth"] or algorithm == algorithmTypes["depth_cut"] else cost
-  if algorithm == algorithmTypes["depth_cut"] and cut <= -cost:
-    return []
+  state = node.state
 
   # To change between problems if needed
-  transitionsStates = [move(state, direction) for direction in propDir.keys()] + [swap(state, direction) for direction in propDir.keys()]
-  transitionsStates = list(filter(lambda state : state, transitionsStates))
+  transitionsMoves = [move(state, direction) for direction in propDir.keys()] + [swap(state, direction) for direction in propDir.keys()]
+  transitionsMoves = list(filter(lambda state : state, transitionsMoves))
   # ------------------------------------
 
   transitions = []
-  for state in transitionsStates:
-    newCost = heuristics(state, cost, heuristic) if algorithm in algorithmTypes["heuristics"] else cost
-    newNode = (state, newCost)
-    transitions.append(newNode)
+  for movement in transitionsMoves:
+    newState = movement["state"]
+    newCost = movement["cost"]
+    newHeuristic = heuristics(state, heuristic)
+    transitions.append(Tree.Node(newState, node.depth+1, node.cost+newCost, newHeuristic, node))
   return transitions

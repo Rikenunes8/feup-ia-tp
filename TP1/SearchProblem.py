@@ -8,13 +8,12 @@ algorithmTypes = {
   "uniform": 4,
   "greedy": 5,
   "A*": 6,
-  "heuristics": [5, 6]
 }
 
 class SearchProblem:
   def __init__(self, initState, isFinalState):
     self.initState = initState
-    self.initNode = Tree.Node((initState, 0), -1)
+    self.initNode = Tree.Node(initState, 0, 0, 0, -1)
     self.queue = [self.initNode]
     self.isFinalState = isFinalState
     self.visited = []
@@ -22,21 +21,38 @@ class SearchProblem:
   def getPath(self, node: Tree.Node):
     path = []
     currentNode = node
-    while currentNode.prev != -1:
-      path.insert(0, currentNode.value)
-      currentNode = currentNode.prev
-    path.insert(0, currentNode.value)
+    while currentNode.parent != -1:
+      path.insert(0, currentNode.state)
+      currentNode = currentNode.parent
+    path.insert(0, currentNode.state)
     return path
   
+  def sortQueue(self, algorithm):
+    if algorithm == algorithmTypes["breadth"]:
+      self.queue.sort(key=lambda node: node.depth)
+    elif algorithm == algorithmTypes["depth"]:
+      self.queue.sort(key=lambda node: -node.depth)
+    elif algorithm == algorithmTypes["depth_cut"]:
+      self.queue.sort(key=lambda node: -node.depth)
+    elif algorithm == algorithmTypes["iterative_deepening"]:
+      self.queue.sort(key=lambda node: -node.depth)
+    elif algorithm == algorithmTypes["uniform"]:
+      self.queue.sort(key=lambda node: node.cost)
+    elif algorithm == algorithmTypes["greedy"]:
+      self.queue.sort(key=lambda node: node.heuristic)
+    elif algorithm == algorithmTypes["A*"]:
+      self.queue.sort(key=lambda node: node.cost + node.heuristic)
+
   def search(self, newTransitions, heuristic, algorithm, cut=-1):
-    countNodesVisited = 0
+    totalNodesVisited = 0
     while True:
       if not self.queue:
         print("No solution found!")
-        return False
+        return (None, totalNodesVisited)
+
       currentNode = self.queue.pop(0)
-      countNodesVisited += 1
-      (currentState, _) = currentNode.value
+      totalNodesVisited += 1
+      currentState = currentNode.state
       print("currentState:", currentState)
 
       self.visited.append(str(currentState))
@@ -45,20 +61,15 @@ class SearchProblem:
         break
 
       currTransitions = newTransitions(currentNode, algorithm, heuristic, cut)
-      currTransitions = list(filter(lambda transition : str(transition[0]) not in self.visited, currTransitions))
+      currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
-        self.queue.append(Tree.Node(transition, currentNode))
+        self.queue.append(transition)
       
-      self.queue.sort(key=lambda node: node.value[1])
-
+      self.sortQueue(algorithm)
+    
     path = self.getPath(currentNode)
-    print("Search path:")
-    for node in path:
-      print(node[0])
-    print("Solution depth:", len(path))
-    print("Nodes visited:", countNodesVisited)
-    return True
+    return (path, totalNodesVisited)
 
 class SearchProblemsAlgorithms:
   def __init__(self, initState, isFinalState, newTransitions):
@@ -66,6 +77,16 @@ class SearchProblemsAlgorithms:
     self.isFinalState = isFinalState
     self.newTransitions = newTransitions
   
+  def showSolution(self, path, totalNodesVisited):
+    print("Search path:")
+    if (path == None):
+      print("No path found")
+    else:
+      for state in path:
+        print(state)
+      print("Solution depth:", len(path)-1)
+    print("Nodes visited:", totalNodesVisited)
+
   def breadth(self):
     print("Calculating Breadth solution...")
     solution = SearchProblem(self.initState, self.isFinalState)
@@ -84,8 +105,14 @@ class SearchProblemsAlgorithms:
   def iterative_deepening(self):
     print("Calculating Iterative Deepening solution...")
     cut = 1
-    while not self.depth_cut(cut):
+    totalNodesVisited = 0
+    while True:
+      (path, tnv) = self.depth_cut(cut)
       cut += 1
+      totalNodesVisited += tnv
+      if (path != None):
+        break
+    return (path, totalNodesVisited)
 
   def uniform(self):
     print("Calculating Uniform Cost solution...")
@@ -102,18 +129,22 @@ class SearchProblemsAlgorithms:
     solution = SearchProblem(self.initState, self.isFinalState)
     return solution.search(self.newTransitions, heuristic, algorithmTypes["A*"])
 
+
   def run(self, algorithm, cut=-1, heuristic=0):
     if algorithmTypes[algorithm] == algorithmTypes["breadth"]:
-      self.breadth()
+      res = self.breadth()
     elif algorithmTypes[algorithm] == algorithmTypes["depth"]:
-      self.depth()
+      res = self.depth()
     elif algorithmTypes[algorithm] == algorithmTypes["depth_cut"]:
-      self.depth_cut(cut)
+      res = self.depth_cut(cut)
     elif algorithmTypes[algorithm] == algorithmTypes["iterative_deepening"]:
-      self.iterative_deepening()
+      res = self.iterative_deepening()
     elif algorithmTypes[algorithm] == algorithmTypes["uniform"]:
-      self.uniform()
+      res = self.uniform()
     elif algorithmTypes[algorithm] == algorithmTypes["greedy"]:
-      self.greedy(heuristic)
+      res = self.greedy(heuristic)
     elif algorithmTypes[algorithm] == algorithmTypes["A*"]:
-      self.aStar(heuristic)
+      res = self.aStar(heuristic)
+    
+    (path, totalNodesVisited) = res
+    self.showSolution(path, totalNodesVisited)
