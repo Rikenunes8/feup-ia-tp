@@ -1,4 +1,5 @@
 from Algorithms import SearchProblemsAlgorithms
+from copy import deepcopy
 import UnequalLengthMazes as ULM
 import pygame
 
@@ -114,22 +115,58 @@ def draw(screen, board):
 
   pygame.display.update()
 
+def makeMove(stack, direction):
+  ret = ULM.swap(stack[-1], direction)
+  if ret:
+    stack.append(ret["state"])
+  ret = ULM.move(stack[-1], direction)
+  if ret:
+    stack.append(ret["state"])
+
+def undoMove(stack):
+  stack.pop()
+  while True:
+    (board, (x, y, d, l), last) = stack[-1]
+    if l != 0 or last == None:
+      break
+    stack.pop() 
+
 def main_pygame():
   run = True
+  stack = []
+  
   pygame.init()
   screen = pygame.display.set_mode((WIDTH, HEIGHT))  
   pygame.display.set_caption('Unequal Length Mazes')
   draw(screen, ULM.initState[0])
+  
+  state = deepcopy(ULM.initState)
+  stack.append(state)
+
   while run:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         run = False
         break
+      if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_UP:
+          makeMove(stack, "up")
+        elif event.key == pygame.K_DOWN:
+          makeMove(stack, "down")
+        elif event.key == pygame.K_LEFT:
+          makeMove(stack, "left")
+        elif event.key == pygame.K_RIGHT:
+          makeMove(stack, "right")
+        elif event.key == pygame.K_BACKSPACE:
+          undoMove(stack)
+        draw(screen, stack[-1][0])
+    if ULM.isFinalState(stack[-1]):
+      run = False
   
   pygame.quit()
   
   
   
 if __name__=='__main__':
-  # main_pygame()
-  main()
+  main_pygame()
+  # main()

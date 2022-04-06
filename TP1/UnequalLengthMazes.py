@@ -11,7 +11,7 @@ DOWN = 2
 LEFT = 3
 RIGHT = 4
 
-initBoard = initBoards[10]
+initBoard = initBoards[0]
 H = len(initBoard)
 W = len(initBoard[0])
 currentCell = (H-1, 0, None, 0)
@@ -55,8 +55,10 @@ def canSwap(nextDir, prevDir):
     
 
 def move(state, direction):
+  print("move state", state)
   (board, (row,col,dir,length), lastSegment) = deepcopy(state)
   step = propDir[direction]['step']
+  print(edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC)
   if edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC:
     row += step[0]
     col += step[1]
