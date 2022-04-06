@@ -1,5 +1,6 @@
 from Algorithms import SearchProblemsAlgorithms
 import UnequalLengthMazes as ULM
+import pygame
 
 
 def showMenu():
@@ -27,6 +28,7 @@ def showHeuristics():
   print("\n*      Heuristics       *")
   print("*-----------------------*")
   print("1 - Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle")
+  print("2 - Sum of each visited cell value. The value of a cell is a multiplication between its row and col.")
   print("0 - Back")
 
 def solvePuzzle(problem):
@@ -73,5 +75,61 @@ def main():
     elif (option == 4): solvePuzzle(problem)
     else: exit()
 
+BG_COLOR = '#888888'
+EMPTY_COLOR = '#DDDDDD'
+BLOCK_COLOR = '#FF0000'
+PATH_COLOR = '#00FF00'
+WIDTH, HEIGHT = 600, 600  
+
+def draw(screen, board):
+  rows = len(board)
+  cols = len(board[0])
+  size = WIDTH / max(rows, cols)
+
+  screen.fill(BG_COLOR)
+
+  for i in range(rows):
+    y = size*i
+    for j in range(cols):
+      x = size*j
+      value = board[i][j]
+      if value == ULM.BC:
+        pygame.draw.rect(screen, BLOCK_COLOR, (x, y, size, size))
+      else: 
+        pygame.draw.rect(screen, EMPTY_COLOR, (x, y, size, size))
+      pygame.draw.rect(screen, "black", (x, y, size, size), 2)
+  for i in range(rows):
+    y = size*i
+    for j in range(cols):
+      x = size*j
+      value = board[i][j]
+      if value == ULM.UP:
+        pygame.draw.rect(screen, PATH_COLOR, (x+size/3, y+size*2/6, size/3, size*8/6))
+      elif value == ULM.DOWN:
+        pygame.draw.rect(screen, PATH_COLOR, (x+size/3, y-size*4/6, size/3, size*8/6))
+      elif value == ULM.LEFT:
+        pygame.draw.rect(screen, PATH_COLOR, (x+size*2/6, y+size/3, size*8/6, size/3))
+      elif value == ULM.RIGHT:
+        pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
+
+  pygame.display.update()
+
+def main_pygame():
+  run = True
+  pygame.init()
+  screen = pygame.display.set_mode((WIDTH, HEIGHT))  
+  pygame.display.set_caption('Unequal Length Mazes')
+  draw(screen, ULM.initState[0])
+  while run:
+    for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+        run = False
+        break
+  
+  pygame.quit()
+  
+  
+  
 if __name__=='__main__':
+  # main_pygame()
   main()
