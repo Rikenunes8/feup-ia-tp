@@ -127,7 +127,7 @@ def undoMove(stack):
     stack.pop() 
 
 
-def menuState(stack):
+def menuState():
   showMenu()
   ask = True
   while ask:
@@ -192,7 +192,7 @@ def main():
       if appState == State.RESOLVE:
         resolveStateEventHandler(event, stack)
     
-    if   appState == State.MENU:          appState = menuState(stack)
+    if   appState == State.MENU:          appState = menuState()
     elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState(stack)      
     elif appState == State.RESOLVE:       appState = resolveState(stack)
     elif appState == State.SOLVE:         appState = solveState()
