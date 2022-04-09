@@ -2,15 +2,15 @@ from Algorithms import SearchProblemsAlgorithms
 from copy import deepcopy
 import UnequalLengthMazes as ULM
 import pygame
+from enum import Enum
 
 
 def showMenu():
   print("\n*          MENU         *")
   print("*-----------------------*")
-  print("1 - Upload Puzzle")
-  print("2 - Show Current Puzzle")
-  print("3 - Solve Puzzle by myself")
-  print("4 - Solve Puzzle by AI")
+  print("1 - Choose Puzzle")
+  print("2 - Solve Puzzle by myself")
+  print("3 - Solve Puzzle by AI")
   print("0 - Exit")
 
 def showAlgorithms():
@@ -38,17 +38,13 @@ def solvePuzzle(problem):
     showAlgorithms()
     algorithm = int(input("\nOption: "))
 
-    if (algorithm == 1):
-      problem.run("breadth")
-    elif (algorithm == 2):
-      problem.run("depth")
+    if   (algorithm == 1):  problem.run("breadth")
+    elif (algorithm == 2):  problem.run("depth")
     elif (algorithm == 3):
       limit = int(input("\nDepth Limit: "))
       problem.run("depth_limited", limit=limit)
-    elif (algorithm == 4):
-      problem.run("iterative_deepening")
-    elif (algorithm == 5):
-      problem.run("uniform")
+    elif (algorithm == 4):  problem.run("iterative_deepening")
+    elif (algorithm == 5):  problem.run("uniform")
     elif (algorithm == 6):
       showHeuristics()
       heuristic = int(input("\nOption: "))
@@ -59,22 +55,7 @@ def solvePuzzle(problem):
       heuristic = int(input("\nOption: "))
       if (heuristic <= 0): continue
       problem.run("A*", heuristic=heuristic)
-    else:
-      return -1
-
-def main():
-  problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
-  
-  option = 1
-  while (option != 0):
-    showMenu()
-    option = int(input("\nOption: "))
-
-    if (option == 1): print("Temporarily unavailable")
-    elif (option == 2): print("Temporarily unavailable")
-    elif (option == 3): print("Temporarily unavailable")
-    elif (option == 4): solvePuzzle(problem)
-    else: exit()
+    else: return -1
 
 BG_COLOR = '#888888'
 EMPTY_COLOR = '#DDDDDD'
@@ -131,42 +112,66 @@ def undoMove(stack):
       break
     stack.pop() 
 
-def main_pygame():
-  run = True
-  stack = []
-  
+class State(Enum):
+  MENU = 1
+  CHOOSE_BOARD = 2
+  RESOLVE = 3
+  SOLVE = 4
+
+def main():
   pygame.init()
   screen = pygame.display.set_mode((WIDTH, HEIGHT))  
   pygame.display.set_caption('Unequal Length Mazes')
-  draw(screen, ULM.initState[0])
-  
-  state = deepcopy(ULM.initState)
-  stack.append(state)
 
+  appState = State.MENU
+  stack = []
+  problem = None
+
+  run = True
   while run:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         run = False
         break
-      if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_UP:
-          makeMove(stack, "up")
-        elif event.key == pygame.K_DOWN:
-          makeMove(stack, "down")
-        elif event.key == pygame.K_LEFT:
-          makeMove(stack, "left")
-        elif event.key == pygame.K_RIGHT:
-          makeMove(stack, "right")
-        elif event.key == pygame.K_BACKSPACE:
-          undoMove(stack)
-        draw(screen, stack[-1][0])
-    if ULM.isFinalState(stack[-1]):
-      run = False
-  
+      if appState == State.RESOLVE:
+        if event.type == pygame.KEYDOWN:
+          if event.key == pygame.K_UP:
+            makeMove(stack, "up")
+          elif event.key == pygame.K_DOWN:
+            makeMove(stack, "down")
+          elif event.key == pygame.K_LEFT:
+            makeMove(stack, "left")
+          elif event.key == pygame.K_RIGHT:
+            makeMove(stack, "right")
+          elif event.key == pygame.K_BACKSPACE:
+            undoMove(stack)
+          draw(screen, stack[-1][0])
+    
+    if appState == State.MENU:
+      showMenu()
+      option = int(input("\nOption: "))
+      if (option == 1): 
+        appState = State.CHOOSE_BOARD
+      elif (option == 2): 
+        appState = State.RESOLVE
+        stack = []
+        stack.append(deepcopy(ULM.initState))
+      elif (option == 3):
+        appState = State.SOLVE
+      else:
+        run = False
+    elif appState == State.CHOOSE_BOARD:
+      appState = State.MENU
+    elif appState == State.RESOLVE:
+      if ULM.isFinalState(stack[-1]):
+        appState = State.MENU
+    elif appState == State.SOLVE:
+      problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
+      solvePuzzle(problem)
+      appState = State.MENU
+
   pygame.quit()
-  
-  
+
   
 if __name__=='__main__':
-  main_pygame()
-  # main()
+  main()

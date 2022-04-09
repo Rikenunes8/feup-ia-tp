@@ -55,10 +55,8 @@ def canSwap(nextDir, prevDir):
     
 
 def move(state, direction):
-  print("move state", state)
   (board, (row,col,dir,length), lastSegment) = deepcopy(state)
   step = propDir[direction]['step']
-  print(edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC)
   if edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC:
     row += step[0]
     col += step[1]
