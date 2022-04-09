@@ -1,8 +1,8 @@
-from Algorithms import SearchProblemsAlgorithms
-from copy import deepcopy
-import UnequalLengthMazes as ULM
 import pygame
+import UnequalLengthMazes as ULM
 from enum import Enum
+from copy import deepcopy
+from Algorithms import SearchProblemsAlgorithms
 
 BG_COLOR = '#888888'
 EMPTY_COLOR = '#DDDDDD'
@@ -118,8 +118,9 @@ def makeMove(stack, direction):
     stack.append(ret["state"])
 
 def undoMove(stack):
+  if len(stack) == 1: return    
   stack.pop()
-  while True:
+  while True and stack:
     (board, (x, y, d, l), last) = stack[-1]
     if l != 0 or last == None:
       break
@@ -128,18 +129,25 @@ def undoMove(stack):
 
 def menuState(stack):
   showMenu()
-  option = int(input("\nOption: "))
+  ask = True
+  while ask:
+    ask = False
+    try: option = int(input("\nOption: "))
+    except: ask = True
   if (option == 1): 
     return State.CHOOSE_BOARD
-  elif (option == 2): 
-    stack.append(deepcopy(ULM.initState))
+  elif (option == 2):
     return State.RESOLVE
   elif (option == 3):
     return State.SOLVE
   else:
     return State.END
 
-def chooseBoardState():
+def chooseBoardState(stack):
+  n = int(input("\nPuzzle: "))
+  ULM.setInitState(n)
+  stack.clear()
+  stack.append(deepcopy(ULM.initState))
   return State.MENU
 
 def resolveState(stack):
@@ -171,7 +179,9 @@ def main():
   pygame.display.set_caption('Unequal Length Mazes')
 
   appState = State.MENU
+  ULM.setInitState(0)
   stack = []
+  stack.append(deepcopy(ULM.initState))
 
   run = True
   while run:
@@ -181,13 +191,14 @@ def main():
         break
       if appState == State.RESOLVE:
         resolveStateEventHandler(event, stack)
-        draw(screen, stack[-1][0])
     
     if   appState == State.MENU:          appState = menuState(stack)
-    elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState()      
+    elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState(stack)      
     elif appState == State.RESOLVE:       appState = resolveState(stack)
     elif appState == State.SOLVE:         appState = solveState()
     elif appState == State.END:           run = False
+    draw(screen, stack[-1][0])
+
       
   pygame.quit()
 

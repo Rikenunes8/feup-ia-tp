@@ -1,24 +1,29 @@
 import Tree
+import boards
 from copy import deepcopy
-from boards import initBoards
 
-EC = 0
-VC = 8
-BC = 9
+EC = boards.EC
+VC = boards.VC
+BC = boards.BC
 
 UP = 1
 DOWN = 2
 LEFT = 3
 RIGHT = 4
 
-initBoard = initBoards[0]
-H = len(initBoard)
-W = len(initBoard[0])
-currentCell = (H-1, 0, None, 0)
-lastSegment = None
+H = 0
+W = 0
+initState = ()
 
-initState = (initBoard, currentCell, lastSegment)
-# initState = ([[1, 4, 9, 9, 1, 4], [1, 2, 1, 4, 1, 9], [1, 2, 1, 2, 3, 1], [1, 2, 4, 2, 4, 1], [3, 3, 3, 1, 2, 1], [8, 4, 4, 4, 2, 4]], (0, 5, 'right', 1), 2)
+def setInitState(n):
+  global initState, H, W
+
+  initBoard = boards.initBoards[n]
+  H = len(initBoard)
+  W = len(initBoard[0])
+  currentCell = (H-1, 0, None, 0)
+  lastSegment = None
+  initState = (initBoard, currentCell, lastSegment)
 
 def isFinalState(state):
   (board, (row,col,dir,length), lastSegment) = state
