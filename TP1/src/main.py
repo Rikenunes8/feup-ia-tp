@@ -18,40 +18,27 @@ class State(Enum):
   END = 5
 
 
-def showMenu():
-  print("\n*          MENU         *")
+menusULM = {
+  "main_menu" : ("MENU", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Exit']),
+  "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
+  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
+}
+
+# TODO Change this to draw in pygame
+def drawMenu(menu):
+  (title, options) = menu
+  print("\n*          " + title + "         *")
   print("*-----------------------*")
-  print("1 - Choose Puzzle")
-  print("2 - Solve Puzzle by myself")
-  print("3 - Solve Puzzle by AI")
-  print("0 - Exit")
-
-def showAlgorithms():
-  print("\n*       Algorithm       *")
-  print("*-----------------------*")
-  print("1 - Breadth First Search")
-  print("2 - Depth First Search")
-  print("3 - Limited Depth First Search")
-  print("4 - Iterative Deepening")
-  print("5 - Uniform Cost")
-  print("6 - Greedy Algorithm")
-  print("7 - A* Algorithm")
-  print("0 - Back")
-
-def showHeuristics():
-  print("\n*      Heuristics       *")
-  print("*-----------------------*")
-  print("1 - Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle")
-  print("2 - Sum of each visited cell value. The value of a cell is a multiplication between its row and col.")
-  print("0 - Back")
+  indexes = list(range(1, len(options), 1)) + [0]
+  for option in list(zip(indexes, options)):
+    print(str(option[0]) + " - " + option[1])
 
 
-
-def solvePuzzle(problem):
+def solvePuzzle(problem): 
   algorithm = 1
   while (algorithm != 0):
-    showAlgorithms()
-    algorithm = int(input("\nOption: "))
+    drawMenu(menusULM["algorithms"])
+    algorithm = int(input("\nOption: ")) # TODO procced according to the option received 
 
     if   (algorithm == 1):  problem.run("breadth")
     elif (algorithm == 2):  problem.run("depth")
@@ -61,19 +48,19 @@ def solvePuzzle(problem):
     elif (algorithm == 4):  problem.run("iterative_deepening")
     elif (algorithm == 5):  problem.run("uniform")
     elif (algorithm == 6):
-      showHeuristics()
-      heuristic = int(input("\nOption: "))
+      drawMenu(menusULM["heuristics"])
+      heuristic = int(input("\nOption: ")) # TODO procced according to the option received
       if (heuristic <= 0): continue
       problem.run("greedy", heuristic=heuristic)
     elif (algorithm == 7):
-      showHeuristics()
+      drawMenu(menusULM["heuristics"])
       heuristic = int(input("\nOption: "))
       if (heuristic <= 0): continue
       problem.run("A*", heuristic=heuristic)
     else: return -1
 
 
-
+# TODO change this to drawBoard with size and offset 
 def draw(screen, board):
   rows = len(board)
   cols = len(board[0])
@@ -105,7 +92,7 @@ def draw(screen, board):
       elif value == ULM.RIGHT:
         pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
-  pygame.display.update()
+  pygame.display.update() 
 
 
 
@@ -126,15 +113,15 @@ def undoMove(stack):
       break
     stack.pop() 
 
-
+# Main Menu
 def menuState():
-  showMenu()
+  drawMenu(menusULM["main_menu"]) 
   ask = True
   while ask:
     ask = False
-    try: option = int(input("\nOption: "))
+    try: option = int(input("\nOption: ")) # TODO do not read from console but from window
     except: ask = True
-  if (option == 1): 
+  if (option == 1): # Change state in the machine
     return State.CHOOSE_BOARD
   elif (option == 2):
     return State.RESOLVE
@@ -143,17 +130,20 @@ def menuState():
   else:
     return State.END
 
+# Display all possible boards and the player chooses from where
 def chooseBoardState(stack):
-  n = int(input("\nPuzzle: "))
+  n = int(input("\nPuzzle: ")) # TODO make a showBoards which draw all boards, then read the option here
   ULM.setInitState(n)
   stack.clear()
   stack.append(deepcopy(ULM.initState))
   return State.MENU
 
+# Player Solves by him self # add here a space for error message and actions explanation
 def resolveState(stack):
   if ULM.isFinalState(stack[-1]): return State.MENU
   else: return State.RESOLVE
 
+# Aks the algorithm to solve the puzzle by
 def solveState():
   problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
   solvePuzzle(problem)
@@ -179,7 +169,7 @@ def main():
   pygame.display.set_caption('Unequal Length Mazes')
 
   appState = State.MENU
-  ULM.setInitState(0)
+  ULM.setInitState(0) # Default Board
   stack = []
   stack.append(deepcopy(ULM.initState))
 
@@ -197,8 +187,7 @@ def main():
     elif appState == State.RESOLVE:       appState = resolveState(stack)
     elif appState == State.SOLVE:         appState = solveState()
     elif appState == State.END:           run = False
-    draw(screen, stack[-1][0])
-
+    draw(screen, stack[-1][0]) # make the draw according ...
       
   pygame.quit()
 
