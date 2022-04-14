@@ -5,10 +5,18 @@ from copy import deepcopy
 from Algorithms import SearchProblemsAlgorithms
 
 BG_COLOR = '#888888'
+# Board Colors
 EMPTY_COLOR = '#DDDDDD'
 BLOCK_COLOR = '#000000'
 PATH_COLOR = '#FF0000'
-WIDTH, HEIGHT = 600, 600  
+# Menu Colors
+TITLE_COLOR = '#000000'
+BUTTON_COLOR = '#FFFFFF'
+TEXT_COLOR = '#000000'
+
+WIDTH, HEIGHT, FONT_SIZE = 800, 600, 40  
+screen = ""
+font = ""
 
 class State(Enum):
   MENU = 1
@@ -19,19 +27,47 @@ class State(Enum):
 
 
 menusULM = {
-  "main_menu" : ("MENU", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Exit']),
+  "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
-  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
+  # "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
+  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan', 'Sum of each visited cell value (row X col weight)', 'Back']),
+  # TODO nas heuristicas optar por mais pequeno o texto ou adaptar a funcao de desenhar para mudar de linha!
 }
 
-# TODO Change this to draw in pygame
+def drawText(text, font, color, surface, x, y):
+  textObj = font.render(text, 1, color)
+  textRect = textObj.get_rect()
+  textRect.topleft = (x, y)
+  surface.blit(textObj, textRect)
+
 def drawMenu(menu):
-  (title, options) = menu
+
+  (title, values) = menu
+  indexes = list(range(1, len(values), 1)) + [0]
+  options = [str(op[0]) + ' - ' + op[1] for op in list(zip(indexes, values))]
+  
+  # TODO to remove when read input is correct
   print("\n*          " + title + "         *")
   print("*-----------------------*")
-  indexes = list(range(1, len(options), 1)) + [0]
-  for option in list(zip(indexes, options)):
-    print(str(option[0]) + " - " + option[1])
+  for option in options:
+    print(option)
+
+  screen.fill(BG_COLOR)
+
+  btn_innerX, btn_innerY = 20, 10
+  btn_sizeX = font.size(max(options, key = len))[0] + btn_innerX*2
+  btn_sizeY = font.size(title)[1] + btn_innerY*2
+  offset_x, offset_y = WIDTH/2 - btn_sizeX/2, 30
+  
+  drawText(title, font, TITLE_COLOR, screen, WIDTH/2 - font.size(title)[0]/2, offset_y)
+
+  offset_y += font.size(title)[1] + FONT_SIZE/2
+  for op in options:
+    pygame.draw.rect(screen, BUTTON_COLOR, (offset_x, offset_y, btn_sizeX, btn_sizeY)) #offX, offY, sizeX, sizeY
+    drawText(op, font, TEXT_COLOR, screen, WIDTH/2 - font.size(op)[0]/2, offset_y + btn_innerY)
+    offset_y += btn_sizeY + FONT_SIZE/3
+
+  pygame.display.update()
 
 
 def solvePuzzle(problem): 
@@ -165,8 +201,11 @@ def resolveStateEventHandler(event, stack):
 
 def main():
   pygame.init()
-  screen = pygame.display.set_mode((WIDTH, HEIGHT))  
+  global screen, font
+  
   pygame.display.set_caption('Unequal Length Mazes')
+  screen = pygame.display.set_mode((WIDTH, HEIGHT))  
+  font = pygame.font.SysFont(None, FONT_SIZE)
 
   appState = State.MENU
   ULM.setInitState(0) # Default Board
@@ -187,7 +226,7 @@ def main():
     elif appState == State.RESOLVE:       appState = resolveState(stack)
     elif appState == State.SOLVE:         appState = solveState()
     elif appState == State.END:           run = False
-    draw(screen, stack[-1][0]) # make the draw according ...
+    #draw(screen, stack[-1][0]) # make the draw according ...
       
   pygame.quit()
 
