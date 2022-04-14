@@ -18,13 +18,18 @@ WIDTH, HEIGHT, FONT_SIZE = 800, 600, 40
 screen = ""
 font = ""
 
+# TODO arrange better solution
+algorithm, heuristic, limit = None, 0, 3 # resolve limit
+
 class State(Enum):
   MENU = 1
   CHOOSE_BOARD = 2
   RESOLVE = 3
-  SOLVE = 4
-  END = 5
-
+  ALGORITHM = 4
+  HEURISTIC = 5
+  SOLVE = 6
+  SHOW_SOLUTION = 7
+  END = 8
 
 menusULM = {
   "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Exit']),
@@ -41,16 +46,9 @@ def drawText(text, font, color, surface, x, y):
   surface.blit(textObj, textRect)
 
 def drawMenu(menu):
-
   (title, values) = menu
   indexes = list(range(1, len(values), 1)) + [0]
   options = [str(op[0]) + ' - ' + op[1] for op in list(zip(indexes, values))]
-  
-  # TODO to remove when read input is correct
-  print("\n*          " + title + "         *")
-  print("*-----------------------*")
-  for option in options:
-    print(option)
 
   screen.fill(BG_COLOR)
 
@@ -68,32 +66,6 @@ def drawMenu(menu):
     offset_y += btn_sizeY + FONT_SIZE/3
 
   pygame.display.update()
-
-
-def solvePuzzle(problem): 
-  algorithm = 1
-  while (algorithm != 0):
-    drawMenu(menusULM["algorithms"])
-    algorithm = int(input("\nOption: ")) # TODO procced according to the option received 
-
-    if   (algorithm == 1):  problem.run("breadth")
-    elif (algorithm == 2):  problem.run("depth")
-    elif (algorithm == 3):
-      limit = int(input("\nDepth Limit: "))
-      problem.run("depth_limited", limit=limit)
-    elif (algorithm == 4):  problem.run("iterative_deepening")
-    elif (algorithm == 5):  problem.run("uniform")
-    elif (algorithm == 6):
-      drawMenu(menusULM["heuristics"])
-      heuristic = int(input("\nOption: ")) # TODO procced according to the option received
-      if (heuristic <= 0): continue
-      problem.run("greedy", heuristic=heuristic)
-    elif (algorithm == 7):
-      drawMenu(menusULM["heuristics"])
-      heuristic = int(input("\nOption: "))
-      if (heuristic <= 0): continue
-      problem.run("A*", heuristic=heuristic)
-    else: return -1
 
 
 # TODO change this to drawBoard with size and offset 
@@ -149,23 +121,6 @@ def undoMove(stack):
       break
     stack.pop() 
 
-# Main Menu
-def menuState():
-  drawMenu(menusULM["main_menu"]) 
-  ask = True
-  while ask:
-    ask = False
-    try: option = int(input("\nOption: ")) # TODO do not read from console but from window
-    except: ask = True
-  if (option == 1): # Change state in the machine
-    return State.CHOOSE_BOARD
-  elif (option == 2):
-    return State.RESOLVE
-  elif (option == 3):
-    return State.SOLVE
-  else:
-    return State.END
-
 # Display all possible boards and the player chooses from where
 def chooseBoardState(stack):
   n = int(input("\nPuzzle: ")) # TODO make a showBoards which draw all boards, then read the option here
@@ -176,13 +131,29 @@ def chooseBoardState(stack):
 
 # Player Solves by him self # add here a space for error message and actions explanation
 def resolveState(stack):
+  draw(screen, stack[-1][0])
   if ULM.isFinalState(stack[-1]): return State.MENU
   else: return State.RESOLVE
 
 # Aks the algorithm to solve the puzzle by
 def solveState():
   problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
-  solvePuzzle(problem)
+  problem.run(algorithm, heuristic=heuristic, limit=limit)
+  return State.SHOW_SOLUTION
+
+def drawSolutionAI(): # TODO draw_problema solution found by the AI, parameters, path, time, nodes?
+  print("solution")
+
+def mainMenuStateEventHandler(event):
+  if event.type == pygame.KEYDOWN:
+    if event.key == pygame.K_1:
+      return State.CHOOSE_BOARD
+    elif event.key == pygame.K_2:
+      return State.RESOLVE
+    elif event.key == pygame.K_3:
+      return State.ALGORITHM
+    elif event.key == pygame.K_0:
+      return State.END
   return State.MENU
 
 def resolveStateEventHandler(event, stack):
@@ -197,17 +168,70 @@ def resolveStateEventHandler(event, stack):
       makeMove(stack, "right")
     elif event.key == pygame.K_BACKSPACE:
       undoMove(stack)
+    elif event.key == pygame.K_ESCAPE:
+      stack.clear()
+      stack.append(deepcopy(ULM.initState))
+      return State.MENU
+  return State.RESOLVE
 
+def algorihtmMenuStateEventHandler(event):
+  global algorithm
+  if event.type == pygame.KEYDOWN:
+    if event.key == pygame.K_1:
+      algorithm = "breadth"
+      return State.SOLVE
+    elif event.key == pygame.K_2:
+      algorithm = "depth"
+      return State.SOLVE
+    elif event.key == pygame.K_3:
+      algorithm = "depth_limited"
+      return State.SOLVE
+    elif event.key == pygame.K_4:
+      algorithm = "iterative_deepening"
+      return State.SOLVE
+    elif event.key == pygame.K_5:
+      algorithm = "uniform"
+      return State.SOLVE
+    elif event.key == pygame.K_6:
+      algorithm = "greedy"
+      return State.HEURISTIC
+    elif event.key == pygame.K_7:
+      algorithm = "A*"
+      return State.HEURISTIC
+    elif event.key == pygame.K_0:
+      return State.MENU
+  return State.ALGORITHM
+
+def heuristicMenuStateEventHandler(event): 
+  global heuristic
+  if event.type == pygame.KEYDOWN:
+    if event.key == pygame.K_1:
+      heuristic = 1
+      return State.SOLVE
+    elif event.key == pygame.K_2:
+      heuristic = 2
+      return State.SOLVE
+    elif event.key == pygame.K_0:
+      return State.ALGORITHM
+  return State.HEURISTIC
+
+def showSolutionStateEventHandler(event): 
+  if event.type == pygame.KEYDOWN:
+    if event.key == pygame.K_ESCAPE:
+      return State.ALGORITHM
+  return State.SHOW_SOLUTION
 
 def main():
   pygame.init()
   global screen, font
-  
+
   pygame.display.set_caption('Unequal Length Mazes')
   screen = pygame.display.set_mode((WIDTH, HEIGHT))  
   font = pygame.font.SysFont(None, FONT_SIZE)
 
   appState = State.MENU
+  drawMenu(menusULM["main_menu"])
+
   ULM.setInitState(0) # Default Board
   stack = []
   stack.append(deepcopy(ULM.initState))
@@ -218,15 +242,27 @@ def main():
       if event.type == pygame.QUIT:
         appState = State.END
         break
-      if appState == State.RESOLVE:
-        resolveStateEventHandler(event, stack)
-    
-    if   appState == State.MENU:          appState = menuState()
-    elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState(stack)      
+      lastState = appState
+      if appState == State.MENU: 
+        appState = mainMenuStateEventHandler(event)
+      elif appState == State.ALGORITHM: 
+        appState = algorihtmMenuStateEventHandler(event)
+      elif appState == State.HEURISTIC: 
+        appState = heuristicMenuStateEventHandler(event)
+      elif appState == State.RESOLVE:
+        appState = resolveStateEventHandler(event, stack)
+      elif appState == State.SHOW_SOLUTION: 
+        appState = showSolutionStateEventHandler(event)
+      if (appState != lastState): break
+
+    if   appState == State.MENU:          drawMenu(menusULM["main_menu"])
+    elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState(stack) # TODO Show in pygame window  
     elif appState == State.RESOLVE:       appState = resolveState(stack)
-    elif appState == State.SOLVE:         appState = solveState()
+    elif appState == State.ALGORITHM:     drawMenu(menusULM["algorithms"])
+    elif appState == State.HEURISTIC:     drawMenu(menusULM["heuristics"])
+    elif appState == State.SOLVE:         appState = solveState() # TODO loading window here while computing
+    elif appState == State.SHOW_SOLUTION: drawSolutionAI() # TODO
     elif appState == State.END:           run = False
-    #draw(screen, stack[-1][0]) # make the draw according ...
       
   pygame.quit()
 
