@@ -1,5 +1,3 @@
-Make grid in choose board vary according to number of boards to display
-
 Arrange better solution to kepp track of algorithm and heuristic choosen in the menus before solving
 
 Loading Window when solving a puzzle by the AI 

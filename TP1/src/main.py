@@ -36,7 +36,13 @@ menusULM = {
 }
 
 # List of boards to display
-boardsULM = [0, 1, 2, 3, 4, 11] 
+boardsULM = [0, 1, 2, 3, 4, 5, 6] 
+
+# Number of rows and columns of the grid according to the number of boards to display
+boardsGrid = {
+  0 : (0, 0), 1 : (1, 1), 2 : (1, 2), 3 : (2, 2), 4 : (2, 2), 5 : (2, 3), 
+  6 : (2, 3), 7 : (2, 4), 8 : (2, 4), 9 : (3, 3), 10: (3, 4), 11: (3, 4), 12: (3, 4) 
+}
 
 # TODO arrange better solution
 algorithm, heuristic, limit = None, 0, 3 # resolve limit
@@ -80,7 +86,8 @@ def drawChooseBoardMenu():
 
   offset_y += font.size(title)[1] + FONT_SIZE/2
   
-  grid_nRows, grid_nCols, grid_marginX, grid_marginY = 2, 3, 30, 5 # TODO make nRows e nCols vary according to nBoards to display
+  grid_marginX, grid_marginY = 30, 5
+  (grid_nRows, grid_nCols) = boardsGrid[len(boardsULM)]
   row_size = (HEIGHT - offset_y - grid_marginY) / grid_nRows
   col_size = (WIDTH - grid_marginX) / grid_nCols
 
@@ -90,8 +97,8 @@ def drawChooseBoardMenu():
     for col in range(grid_nCols):
       if (boardIdx >= len(boardsULM)) : break
       board = ULM.boards.initBoards[boardsULM[boardIdx]]
-      drawBoard(screen, board, offset_x, offset_y, row_size - FONT_SIZE, col_size - grid_marginX)
-      drawText(str(boardIdx), font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(str(boardIdx))[0]*1.5, offset_y + row_size - FONT_SIZE)
+      drawBoard(screen, board, offset_x, offset_y + FONT_SIZE, row_size - FONT_SIZE, col_size - grid_marginX)
+      drawText(str(boardIdx), font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(str(boardIdx))[0]*1.5, offset_y + (FONT_SIZE - font.size(str(boardIdx))[1]))
       boardIdx += 1
       offset_x += col_size
     offset_y += row_size
