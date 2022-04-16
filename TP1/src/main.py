@@ -135,7 +135,7 @@ def drawBoard(screen, board, offX=0, offY=0, height=HEIGHT, width=WIDTH):
       elif value == ULM.RIGHT:
         pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
-def drawSolutionAI(): # TODO draw_problema solution found by the AI, parameters, path nodes?
+def drawSolutionAI():
   screen.fill(BG_COLOR)
 
   offset_x, offset_y = 20, 30
@@ -151,7 +151,8 @@ def drawSolutionAI(): # TODO draw_problema solution found by the AI, parameters,
   nodesStr = "Nodes Visited: " + str(nodes)
   textsize = font.size(max([depthStr, nodesStr], key = len))[0] + offset_x
 
-  drawBoard(screen, board, offset_x, offset_y, WIDTH - offset_x*2 - textsize, HEIGHT - offset_y - offset_x)
+  if (board == None): drawText("No Solution Found", font, TEXT_COLOR, screen, offset_x, offset_y + (HEIGHT - offset_y - offset_x)/2 - FONT_SIZE)
+  else: drawBoard(screen, board, offset_x, offset_y, WIDTH - offset_x*2 - textsize, HEIGHT - offset_y - offset_x)
   drawText(depthStr, font, TEXT_COLOR, screen, WIDTH - textsize, offset_y + FONT_SIZE)
   drawText(nodesStr, font, TEXT_COLOR, screen, WIDTH - textsize, offset_y + FONT_SIZE*2)
 
