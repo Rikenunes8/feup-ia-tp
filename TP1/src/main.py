@@ -35,7 +35,8 @@ menusULM = {
   "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan', 'Sum of each visited cell value (row X col weight)', 'Back']),
 }
 
-boardsULM = [0, 1, 2, 3, 4]
+# List of boards to display
+boardsULM = [0, 1, 2, 3, 4, 11] 
 
 # TODO arrange better solution
 algorithm, heuristic, limit = None, 0, 3 # resolve limit
@@ -69,7 +70,6 @@ def drawMenu(menu):
 
   pygame.display.update()
 
-
 def drawChooseBoardMenu():
   screen.fill(BG_COLOR)
 
@@ -80,36 +80,33 @@ def drawChooseBoardMenu():
 
   offset_y += font.size(title)[1] + FONT_SIZE/2
   
-  grid_nRows, grid_nCols, grid_margin = 2, 3, 20 # make nRows e nCols vary according to nBoards to display
-  row_size = (HEIGHT - offset_y - grid_margin) / grid_nRows
-  col_size = (WIDTH - grid_margin) / grid_nCols
+  grid_nRows, grid_nCols, grid_marginX, grid_marginY = 2, 3, 30, 5 # TODO make nRows e nCols vary according to nBoards to display
+  row_size = (HEIGHT - offset_y - grid_marginY) / grid_nRows
+  col_size = (WIDTH - grid_marginX) / grid_nCols
 
   boardIdx = 0
   for row in range(grid_nRows):
-    offset_x = grid_margin
+    offset_x = grid_marginX
     for col in range(grid_nCols):
       if (boardIdx >= len(boardsULM)) : break
-      # drawBoard(N, sizeH = row_size - FONT_SIZE, sizeW = col_size - grid_margin) # draw boards in boardsULM N = indexe
-      drawText(str(boardIdx), font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(str(boardIdx))[0], offset_y + row_size - FONT_SIZE)
+      board = ULM.boards.initBoards[boardsULM[boardIdx]]
+      drawBoard(screen, board, offset_x, offset_y, row_size - FONT_SIZE, col_size - grid_marginX)
+      drawText(str(boardIdx), font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(str(boardIdx))[0]*1.5, offset_y + row_size - FONT_SIZE)
       boardIdx += 1
       offset_x += col_size
     offset_y += row_size
 
   pygame.display.update()
 
-
-# TODO change this to drawBoard with size and offset 
-def draw(screen, board):
+def drawBoard(screen, board, offX=0, offY=0, height=HEIGHT, width=WIDTH):
   rows = len(board)
   cols = len(board[0])
-  size = WIDTH / max(rows, cols)
-
-  screen.fill(BG_COLOR)
+  size = min(height/rows, width/cols)
 
   for i in range(rows):
-    y = size*i
+    y = size*i + offY
     for j in range(cols):
-      x = size*j
+      x = size*j + offX
       value = board[i][j]
       if value == ULM.BC:
         pygame.draw.rect(screen, BLOCK_COLOR, (x, y, size, size))
@@ -117,9 +114,9 @@ def draw(screen, board):
         pygame.draw.rect(screen, EMPTY_COLOR, (x, y, size, size))
       pygame.draw.rect(screen, "black", (x, y, size, size), 2)
   for i in range(rows):
-    y = size*i
+    y = size*i + offY
     for j in range(cols):
-      x = size*j
+      x = size*j + offX
       value = board[i][j]
       if value == ULM.UP:
         pygame.draw.rect(screen, PATH_COLOR, (x+size/3, y+size*2/6, size/3, size*8/6))
@@ -129,9 +126,6 @@ def draw(screen, board):
         pygame.draw.rect(screen, PATH_COLOR, (x+size*2/6, y+size/3, size*8/6, size/3))
       elif value == ULM.RIGHT:
         pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
-
-  pygame.display.update() 
-
 
 
 def makeMove(stack, direction):
@@ -154,7 +148,10 @@ def undoMove(stack):
 
 # Player Solves by him self # add here a space for error message and actions explanation
 def resolveState(stack):
-  draw(screen, stack[-1][0])
+  screen.fill(BG_COLOR)
+  drawBoard(screen, stack[-1][0])
+  pygame.display.update()
+
   if ULM.isFinalState(stack[-1]): return State.MENU
   else: return State.RESOLVE
 

@@ -1,5 +1,4 @@
-Draw Choose Board Menu
-For this generalize draw function -> correct draw board for w 800 and h 600
+Make grid in choose board vary according to number of boards to display
 
 Arrange better solution to kepp track of algorithm and heuristic choosen in the menus before solving
 
