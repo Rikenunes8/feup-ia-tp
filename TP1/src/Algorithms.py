@@ -17,7 +17,6 @@ class SearchProblemsAlgorithms:
         print(state)
       print("Solution depth:", len(path)-1)
     print("Nodes visited:", totalNodesVisited)
-    self.solution = (None if (path == None) else path[-1][0], len(path) - 1, totalNodesVisited)
 
   def getSolution(self):
     return self.solution
@@ -83,4 +82,5 @@ class SearchProblemsAlgorithms:
       res = self.aStar(heuristic)
     
     (path, totalNodesVisited) = res
+    self.solution = (path, 0 if path == None else len(path)-1, totalNodesVisited)
     self.showSolution(path, totalNodesVisited)
