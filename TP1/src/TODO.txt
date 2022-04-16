@@ -1,7 +1,5 @@
 Draw Choose Board Menu
-For this generalize draw function
-
-Add actions and error messages in game mode of 1 player - when victory show time taken?? IDK 
+For this generalize draw function -> correct draw board for w 800 and h 600
 
 Arrange better solution to kepp track of algorithm and heuristic choosen in the menus before solving
 
@@ -9,3 +7,7 @@ Loading Window when solving a puzzle by the AI
 
 Show AI solution in pygame WIndow till K_ESCAPE when it comes back to algorithm MENU
 solution is the board with the correct path + time needed and nodes proceced? 
+
+
+----
+Add actions and error messages in game mode of 1 player - when victory show time taken?? IDK 
