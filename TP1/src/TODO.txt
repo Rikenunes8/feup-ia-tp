@@ -1,6 +1,5 @@
-Arrange better solution to kepp track of algorithm and heuristic choosen in the menus before solving and Solution found after
-
-Loading Window when solving a puzzle by the AI 
+Arrange better solution to kepp track of algorithm and heuristic choosen in the menus before solving 
+and Solution found after
 
 ----
 Add actions and error messages in game mode of 1 player - when victory show time taken?? IDK 

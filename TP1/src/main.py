@@ -187,6 +187,12 @@ def resolveState(stack):
 
 # Aks the algorithm to solve the puzzle by
 def solveState():
+  screen.fill(BG_COLOR)
+  heurStr = " [h() : " + str(heuristic) + "] ..." if (algorithm == "greedy" or algorithm == "A*") else "..."
+  message = "Calculating " + algorithm + " solution " + heurStr
+  drawText(message, font, TITLE_COLOR, screen, WIDTH/2 - font.size(message)[0]/2, HEIGHT/2 - font.size(message)[1]/2)
+  pygame.display.update()
+
   problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
   problem.run(algorithm, heuristic=heuristic, limit=limit)
   global solutionAI
@@ -314,6 +320,8 @@ def main():
         appState = algorihtmMenuStateEventHandler(event)
       elif appState == State.HEURISTIC: 
         appState = heuristicMenuStateEventHandler(event)
+      elif appState == State.SOLVE:
+        continue
       elif appState == State.SHOW_SOLUTION: 
         appState = showSolutionStateEventHandler(event)
       if (appState != lastState): break
@@ -323,7 +331,7 @@ def main():
     elif appState == State.RESOLVE:       appState = resolveState(stack)
     elif appState == State.ALGORITHM:     drawOptionMenu(menusULM["algorithms"])
     elif appState == State.HEURISTIC:     drawOptionMenu(menusULM["heuristics"])
-    elif appState == State.SOLVE:         appState = solveState() # TODO loading window here while computing
+    elif appState == State.SOLVE:         appState = solveState()
     elif appState == State.SHOW_SOLUTION: drawSolutionAI()
     elif appState == State.END:           run = False
       
