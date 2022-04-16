@@ -36,7 +36,7 @@ menusULM = {
 }
 
 # List of boards to display
-boardsULM = [0, 1, 2, 3, 4, 5, 6] 
+boardsULM = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
 
 # Number of rows and columns of the grid according to the number of boards to display
 boardsGrid = {
@@ -44,9 +44,9 @@ boardsGrid = {
   6 : (2, 3), 7 : (2, 4), 8 : (2, 4), 9 : (3, 3), 10: (3, 4), 11: (3, 4), 12: (3, 4) 
 }
 
-# TODO arrange better solution
-algorithm, heuristic, limit = None, 0, 3 # resolve limit
-
+# TODO arrange better solution to save this values!! 
+algorithm, heuristic, limit = None, 0, 3 # TODO resolve limit
+solutionAI = ()
 
 def drawText(text, font, color, surface, x, y):
   textObj = font.render(text, 1, color)
@@ -54,7 +54,7 @@ def drawText(text, font, color, surface, x, y):
   textRect.topleft = (x, y)
   surface.blit(textObj, textRect)
 
-def drawMenu(menu):
+def drawOptionMenu(menu):
   (title, values) = menu
   indexes = list(range(1, len(values), 1)) + [0]
   options = [str(op[0]) + ' - ' + op[1] for op in list(zip(indexes, values))]
@@ -98,7 +98,8 @@ def drawChooseBoardMenu():
       if (boardIdx >= len(boardsULM)) : break
       board = ULM.boards.initBoards[boardsULM[boardIdx]]
       drawBoard(screen, board, offset_x, offset_y + FONT_SIZE, row_size - FONT_SIZE, col_size - grid_marginX)
-      drawText(str(boardIdx), font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(str(boardIdx))[0]*1.5, offset_y + (FONT_SIZE - font.size(str(boardIdx))[1]))
+      legend = pygame.key.name(pygame.K_a + boardIdx)
+      drawText(legend, font, TEXT_COLOR, screen, offset_x + col_size/2 - font.size(legend)[0]*1.5, offset_y + (FONT_SIZE - font.size(legend)[1]))
       boardIdx += 1
       offset_x += col_size
     offset_y += row_size
@@ -134,6 +135,28 @@ def drawBoard(screen, board, offX=0, offY=0, height=HEIGHT, width=WIDTH):
       elif value == ULM.RIGHT:
         pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
+def drawSolutionAI(): # TODO draw_problema solution found by the AI, parameters, path nodes?
+  screen.fill(BG_COLOR)
+
+  offset_x, offset_y = 20, 30
+
+  heurStr = " [h() : " + str(heuristic) + "]" if (algorithm == "greedy" or algorithm == "A*") else ""
+  title = "Solution Found by " + algorithm + heurStr
+  drawText(title, font, TITLE_COLOR, screen, WIDTH/2 - font.size(title)[0]/2, offset_y)
+
+  offset_y += font.size(title)[1] + FONT_SIZE/2
+
+  (board, depth, nodes) = solutionAI 
+  depthStr = "Solution Depth: " + str(depth)
+  nodesStr = "Nodes Visited: " + str(nodes)
+  textsize = font.size(max([depthStr, nodesStr], key = len))[0] + offset_x
+
+  drawBoard(screen, board, offset_x, offset_y, WIDTH - offset_x*2 - textsize, HEIGHT - offset_y - offset_x)
+  drawText(depthStr, font, TEXT_COLOR, screen, WIDTH - textsize, offset_y + FONT_SIZE)
+  drawText(nodesStr, font, TEXT_COLOR, screen, WIDTH - textsize, offset_y + FONT_SIZE*2)
+
+  pygame.display.update()
+
 
 def makeMove(stack, direction):
   ret = ULM.swap(stack[-1], direction)
@@ -166,10 +189,10 @@ def resolveState(stack):
 def solveState():
   problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
   problem.run(algorithm, heuristic=heuristic, limit=limit)
+  global solutionAI
+  solutionAI = problem.getSolution()
   return State.SHOW_SOLUTION
 
-def drawSolutionAI(): # TODO draw_problema solution found by the AI, parameters, path, time, nodes?
-  print("solution")
 
 def mainMenuStateEventHandler(event):
   if event.type == pygame.KEYDOWN:
@@ -185,8 +208,8 @@ def mainMenuStateEventHandler(event):
 
 def chooseBoardStateEventHandler(event, stack):
   if event.type == pygame.KEYDOWN:
-    if event.key >= pygame.K_0 and event.key <= (pygame.K_0 + len(boardsULM) - 1):
-      ULM.setInitState(boardsULM[event.key-48]) 
+    if event.key >= pygame.K_a and event.key <= (pygame.K_a + len(boardsULM) - 1):
+      ULM.setInitState(boardsULM[event.key-pygame.K_a]) 
       stack.clear()
       stack.append(deepcopy(ULM.initState))
       return State.MENU
@@ -268,7 +291,7 @@ def main():
   font = pygame.font.SysFont(None, FONT_SIZE)
 
   appState = State.MENU
-  drawMenu(menusULM["main_menu"])
+  drawOptionMenu(menusULM["main_menu"])
 
   ULM.setInitState(0) # Default Board
   stack = []
@@ -295,13 +318,13 @@ def main():
         appState = showSolutionStateEventHandler(event)
       if (appState != lastState): break
 
-    if   appState == State.MENU:          drawMenu(menusULM["main_menu"])
+    if   appState == State.MENU:          drawOptionMenu(menusULM["main_menu"])
     elif appState == State.CHOOSE_BOARD:  drawChooseBoardMenu()
     elif appState == State.RESOLVE:       appState = resolveState(stack)
-    elif appState == State.ALGORITHM:     drawMenu(menusULM["algorithms"])
-    elif appState == State.HEURISTIC:     drawMenu(menusULM["heuristics"])
+    elif appState == State.ALGORITHM:     drawOptionMenu(menusULM["algorithms"])
+    elif appState == State.HEURISTIC:     drawOptionMenu(menusULM["heuristics"])
     elif appState == State.SOLVE:         appState = solveState() # TODO loading window here while computing
-    elif appState == State.SHOW_SOLUTION: drawSolutionAI() # TODO
+    elif appState == State.SHOW_SOLUTION: drawSolutionAI()
     elif appState == State.END:           run = False
       
   pygame.quit()

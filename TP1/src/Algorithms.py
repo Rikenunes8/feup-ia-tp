@@ -5,6 +5,8 @@ class SearchProblemsAlgorithms:
     self.initState = initState
     self.isFinalState = isFinalState
     self.newTransitions = newTransitions
+    self.solution = (None, 0, 0) # final_state, solution_depth, nodes_visited
+
   
   def showSolution(self, path, totalNodesVisited):
     print("Search path:")
@@ -15,6 +17,11 @@ class SearchProblemsAlgorithms:
         print(state)
       print("Solution depth:", len(path)-1)
     print("Nodes visited:", totalNodesVisited)
+    self.solution = (None if (path == None) else path[-1][0], len(path) - 1, totalNodesVisited)
+
+  def getSolution(self):
+    return self.solution
+    
 
   def breadth(self):
     print("Calculating BFS solution...")
