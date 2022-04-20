@@ -92,6 +92,7 @@ class Drawer:
     size = min(height/rows, width/cols)
     offX += (width - size*cols) / 2
     offY += (height - size*rows) / 2
+
     for i in range(rows):
       y = size*i + offY
       for j in range(cols):
@@ -116,7 +117,7 @@ class Drawer:
         elif value == ULM.RIGHT:
           pygame.draw.rect(self.screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
-  def drawSolutionAI(self, solutionAI, algorithm, heuristic, elapsedTime):
+  def drawSolutionAI(self, solutionAI, algorithm, heuristic):
     self.screen.fill(BG_COLOR)
 
     offset_x, offset_y = 20, 30
@@ -127,18 +128,18 @@ class Drawer:
 
     offset_y += self.font.size(title)[1] + FONT_SIZE/2
 
-    (path, depth, nodes) = solutionAI 
+    (path, depth, nodes, time) = solutionAI 
     board = None if path == None else path[-1][0]
     depthStr = "Solution Depth: " + str(depth)
     nodesStr = "Nodes Visited: " + str(nodes)
-    elapsedStr = "Time: " + str(elapsedTime)
-    textsize = self.font.size(max([depthStr, nodesStr, elapsedStr], key = len))[0] + offset_x
+    timeStr = "Elapsed Time: " + str(time)
+    textsize = self.font.size(max([depthStr, nodesStr, timeStr], key = len))[0] + offset_x
 
     if (board == None): self.drawText("No Solution Found", TEXT_COLOR, offset_x, offset_y + (HEIGHT - offset_y - offset_x)/2 - FONT_SIZE)
-    else: self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x, WIDTH - offset_x*2 - textsize)
+    else: self.drawBoard(board, offset_x, offset_y, WIDTH - offset_x*2 - textsize, HEIGHT - offset_y - offset_x)
     self.drawText(depthStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE)
     self.drawText(nodesStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*2)
-    self.drawText(elapsedStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*3)
+    self.drawText(timeStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*4)
 
     pygame.display.update()
 
@@ -158,8 +159,6 @@ class Drawer:
     if won:
       self.drawText(victory, GREEN_COLOR, WIDTH - offset_x - self.font.size(victory)[0], HEIGHT - FONT_SIZE)
 
-    pygame.display.update()
-
   def drawSolveState(self, algorithm, heuristic):
     self.screen.fill(BG_COLOR)
     heurStr = " [h() : " + str(heuristic) + "] ..." if (algorithm == "greedy" or algorithm == "A*") else "..."
@@ -172,4 +171,10 @@ class Drawer:
     title = "Introduce the Limit:"
     self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, HEIGHT/2 - self.font.size(limit)[1]*2)
     self.drawText(limit, TEXT_COLOR, WIDTH/2 - self.font.size(limit)[0]/2, HEIGHT/2 - self.font.size(limit)[1]/2)
+    pygame.display.update()
+
+  def drawAnalyseState(self):
+    self.screen.fill(BG_COLOR)
+    message = "Analysing... at the end results will be in analysis.txt"
+    self.drawText(message, TITLE_COLOR, WIDTH/2 - self.font.size(message)[0]/2, HEIGHT/2 - self.font.size(message)[1]/2)
     pygame.display.update()

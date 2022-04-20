@@ -1,10 +1,10 @@
 import pygame
 from Game import *
 from Drawer import Drawer
-
+from Analyser import Analyser
 
 menusULM = {
-  "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Exit']),
+  "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
   # "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
   "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan', 'Sum of each visited cell value (row X col weight)', 'Back']),
@@ -13,6 +13,7 @@ menusULM = {
 def main():
   game = Game()  
   drawer = Drawer()
+  analyser = Analyser()
 
   drawer.drawOptionMenu(menusULM["main_menu"])
   appState = State.MENU
@@ -59,7 +60,11 @@ def main():
       drawer.drawSolveState(game.algorithm, game.heuristic)
       appState = game.solveState()
     elif appState == State.SHOW_SOLUTION: 
-      drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic, game.elapsedTime)
+      drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic)
+    elif appState == State.ANALYSE: 
+        drawer.drawAnalyseState()
+        analyser.analyse(len(menusULM["heuristics"][1])-1)
+        appState = State.MENU
     elif appState == State.END:
       run = False
       
