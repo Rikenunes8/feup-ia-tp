@@ -47,7 +47,7 @@ def main():
     elif appState == State.CHOOSE_BOARD:
       drawer.drawChooseBoardMenu()
     elif appState == State.RESOLVE:
-      drawer.drawResolveState(game.stack[-1][0], game.elapsedTime)
+      drawer.drawResolveState(game.stack[-1][0], game.elapsedTime, len(game.stack)>1 and not game.playing)
       appState = game.resolveState()
     elif appState == State.ALGORITHM:
       drawer.drawOptionMenu(menusULM["algorithms"])

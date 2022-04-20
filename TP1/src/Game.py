@@ -26,8 +26,7 @@ class Game:
     pygame.init()
 
     ULM.setInitState(0) # Default Board
-    self.stack = []
-    self.stack.append(deepcopy(ULM.initState))
+    self.stack = [deepcopy(ULM.initState)]
     self.algorithm = None
     self.heuristic = 0
     self.limit = 3
@@ -35,7 +34,7 @@ class Game:
     self.solutionAI = None
     self.initTime = None
     self.elapsedTime = None
-    self.started = False
+    self.playing = False
     
 
   def end(self):
@@ -48,8 +47,8 @@ class Game:
     ret2 = ULM.move(self.stack[-1], direction)
     if ret2:
       self.stack.append(ret2["state"])
-    
-    if (ret1 and (not ret2)):
+
+    if ret1 and (not ret2):
       self.stack.pop()
 
   def undoMove(self):
@@ -64,16 +63,15 @@ class Game:
 
   # Player Solves by him self # add here a space for error message and actions explanation
   def resolveState(self):
-    if not self.started:
-      self.started = True
+    if ULM.isFinalState(self.stack[-1]):
+      self.playing = False
+    elif not self.playing:
+      self.playing = True
       self.initTime = time.time()
     else: 
       self.elapsedTime = round(time.time() - self.initTime)
-    if ULM.isFinalState(self.stack[-1]):
-      self.started = False
-      self.stack = self.stack[:1]
-      return State.MENU
-    else: return State.RESOLVE
+
+    return State.RESOLVE
 
   # Aks the algorithm to solve the puzzle by
   def solveState(self):
@@ -123,6 +121,7 @@ class Game:
       elif event.key == pygame.K_ESCAPE:
         self.stack.clear()
         self.stack.append(deepcopy(ULM.initState))
+        self.playing = False
         return State.MENU
     return State.RESOLVE
 

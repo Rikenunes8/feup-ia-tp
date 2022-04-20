@@ -17,6 +17,7 @@ PATH_COLOR = '#FF0000'
 TITLE_COLOR = '#000000'
 BUTTON_COLOR = '#FFFFFF'
 TEXT_COLOR = '#000000'
+GREEN_COLOR = '#00FF00'
 
 WIDTH, HEIGHT, FONT_SIZE = 800, 600, 40  
 
@@ -141,10 +142,11 @@ class Drawer:
 
     pygame.display.update()
 
-  def drawResolveState(self, board, elapsedTime):
+  def drawResolveState(self, board, elapsedTime, won):
     self.screen.fill(BG_COLOR)
     offset_x, offset_y = 20, 30
     title = "Unequal Length Maze"
+    victory = "Victory"
     self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
     offset_y += self.font.size(title)[1] + FONT_SIZE/2
 
@@ -152,7 +154,9 @@ class Drawer:
     textsize = self.font.size(max([elapsedStr], key = len))[0] + offset_x
 
     self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x - FONT_SIZE, WIDTH - offset_x)
-    self.drawText(elapsedStr, TEXT_COLOR, WIDTH - textsize, HEIGHT - FONT_SIZE)
+    self.drawText(elapsedStr, TEXT_COLOR, offset_x, HEIGHT - FONT_SIZE)
+    if won:
+      self.drawText(victory, GREEN_COLOR, WIDTH - offset_x - self.font.size(victory)[0], HEIGHT - FONT_SIZE)
 
     pygame.display.update()
 
