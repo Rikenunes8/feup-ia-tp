@@ -17,6 +17,7 @@ PATH_COLOR = '#FF0000'
 TITLE_COLOR = '#000000'
 BUTTON_COLOR = '#FFFFFF'
 TEXT_COLOR = '#000000'
+GREEN_COLOR = '#00FF00'
 
 WIDTH, HEIGHT, FONT_SIZE = 800, 600, 40  
 
@@ -89,6 +90,8 @@ class Drawer:
     rows = len(board)
     cols = len(board[0])
     size = min(height/rows, width/cols)
+    offX += (width - size*cols) / 2
+    offY += (height - size*rows) / 2
 
     for i in range(rows):
       y = size*i + offY
@@ -140,16 +143,34 @@ class Drawer:
 
     pygame.display.update()
 
-  def drawResolveState(self, board):
+  def drawResolveState(self, board, elapsedTime, won):
     self.screen.fill(BG_COLOR)
-    self.drawBoard(board)
-    pygame.display.update()
+    offset_x, offset_y = 20, 30
+    title = "Unequal Length Maze"
+    victory = "Victory"
+    self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
+    offset_y += self.font.size(title)[1] + FONT_SIZE/2
+
+    elapsedStr = "Time: " + str(elapsedTime)
+    textsize = self.font.size(max([elapsedStr], key = len))[0] + offset_x
+
+    self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x - FONT_SIZE, WIDTH - offset_x)
+    self.drawText(elapsedStr, TEXT_COLOR, offset_x, HEIGHT - FONT_SIZE)
+    if won:
+      self.drawText(victory, GREEN_COLOR, WIDTH - offset_x - self.font.size(victory)[0], HEIGHT - FONT_SIZE)
 
   def drawSolveState(self, algorithm, heuristic):
     self.screen.fill(BG_COLOR)
     heurStr = " [h() : " + str(heuristic) + "] ..." if (algorithm == "greedy" or algorithm == "A*") else "..."
     message = "Calculating " + algorithm + " solution " + heurStr
     self.drawText(message, TITLE_COLOR, WIDTH/2 - self.font.size(message)[0]/2, HEIGHT/2 - self.font.size(message)[1]/2)
+    pygame.display.update()
+
+  def drawLimitState(self, limit):
+    self.screen.fill(BG_COLOR)
+    title = "Introduce the Limit:"
+    self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, HEIGHT/2 - self.font.size(limit)[1]*2)
+    self.drawText(limit, TEXT_COLOR, WIDTH/2 - self.font.size(limit)[0]/2, HEIGHT/2 - self.font.size(limit)[1]/2)
     pygame.display.update()
 
   def drawAnalyseState(self):

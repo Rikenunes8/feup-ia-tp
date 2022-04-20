@@ -3,7 +3,6 @@ from Game import *
 from Drawer import Drawer
 from Analyser import Analyser
 
-
 menusULM = {
   "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
@@ -36,6 +35,8 @@ def main():
         appState = game.algorihtmMenuStateEventHandler(event)
       elif appState == State.HEURISTIC: 
         appState = game.heuristicMenuStateEventHandler(event)
+      elif appState == State.LIMIT:
+        appState = game.limitStateEventHandler(event)
       elif appState == State.SOLVE:
         continue
       elif appState == State.SHOW_SOLUTION: 
@@ -44,15 +45,17 @@ def main():
     
     if   appState == State.MENU:          
       drawer.drawOptionMenu(menusULM["main_menu"])
-    elif appState == State.CHOOSE_BOARD:  
+    elif appState == State.CHOOSE_BOARD:
       drawer.drawChooseBoardMenu()
-    elif appState == State.RESOLVE:       
-      drawer.drawResolveState(game.stack[-1][0])
+    elif appState == State.RESOLVE:
+      drawer.drawResolveState(game.stack[-1][0], game.elapsedTime, len(game.stack)>1 and not game.playing)
       appState = game.resolveState()
-    elif appState == State.ALGORITHM:     
+    elif appState == State.ALGORITHM:
       drawer.drawOptionMenu(menusULM["algorithms"])
     elif appState == State.HEURISTIC:     
       drawer.drawOptionMenu(menusULM["heuristics"])
+    elif appState == State.LIMIT:
+      drawer.drawLimitState(game.limitStr)
     elif appState == State.SOLVE:         
       drawer.drawSolveState(game.algorithm, game.heuristic)
       appState = game.solveState()

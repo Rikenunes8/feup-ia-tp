@@ -24,6 +24,10 @@ class SearchProblemsAlgorithms:
     return self.solution
     
 
+  def getSolution(self):
+    return self.solution
+    
+
   def breadth(self):
     print("Calculating BFS solution...")
     solution = SearchProblem(self.initState, self.isFinalState)
@@ -89,3 +93,4 @@ class SearchProblemsAlgorithms:
     elapsedTime = round(time.time() - start_time, 2)
     self.solution = (path, 0 if path == None else len(path)-1, totalNodesVisited, elapsedTime)
     self.showSolution(path, totalNodesVisited, elapsedTime)
+    

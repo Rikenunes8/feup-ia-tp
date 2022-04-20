@@ -5,8 +5,7 @@ import pygame
 import UnequalLengthMazes as ULM
 from boards import boardsULM
 from Algorithms import SearchProblemsAlgorithms
-
-
+import time
 
 
 class State(Enum):
@@ -15,33 +14,40 @@ class State(Enum):
   RESOLVE = 3
   ALGORITHM = 4
   HEURISTIC = 5
-  SOLVE = 6
-  SHOW_SOLUTION = 7
-  END = 8
+  LIMIT = 6
+  SOLVE = 7
+  SHOW_SOLUTION = 8
   ANALYSE = 9
+  END = 10
 
 class Game:
   def __init__(self):
     pygame.init()
 
     ULM.setInitState(0) # Default Board
-    self.stack = []
-    self.stack.append(deepcopy(ULM.initState))
+    self.stack = [deepcopy(ULM.initState)]
     self.algorithm = None
     self.heuristic = 0
     self.limit = 3
+    self.limitStr = ""
     self.solutionAI = None
+    self.initTime = None
+    self.elapsedTime = None
+    self.playing = False
 
   def end(self):
     pygame.quit()
 
   def makeMove(self, direction):
-    ret = ULM.swap(self.stack[-1], direction)
-    if ret:
-      self.stack.append(ret["state"])
-    ret = ULM.move(self.stack[-1], direction)
-    if ret:
-      self.stack.append(ret["state"])
+    ret1 = ULM.swap(self.stack[-1], direction)
+    if ret1:
+      self.stack.append(ret1["state"])
+    ret2 = ULM.move(self.stack[-1], direction)
+    if ret2:
+      self.stack.append(ret2["state"])
+
+    if ret1 and (not ret2):
+      self.stack.pop()
 
   def undoMove(self):
     if len(self.stack) == 1: return    
@@ -55,9 +61,16 @@ class Game:
 
   # Player Solves by him self # add here a space for error message and actions explanation
   def resolveState(self):
-    if ULM.isFinalState(self.stack[-1]): return State.MENU
-    else: return State.RESOLVE
+    if ULM.isFinalState(self.stack[-1]):
+      self.playing = False
+    elif not self.playing:
+      self.playing = True
+      self.initTime = time.time()
+    else: 
+      self.elapsedTime = round(time.time() - self.initTime)
 
+    return State.RESOLVE
+  
   # Aks the algorithm to solve the puzzle by
   def solveState(self):
     problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
@@ -106,6 +119,7 @@ class Game:
       elif event.key == pygame.K_ESCAPE:
         self.stack.clear()
         self.stack.append(deepcopy(ULM.initState))
+        self.playing = False
         return State.MENU
     return State.RESOLVE
 
@@ -119,7 +133,7 @@ class Game:
         return State.SOLVE
       elif event.key == pygame.K_3:
         self.algorithm = "depth_limited"
-        return State.SOLVE
+        return State.LIMIT
       elif event.key == pygame.K_4:
         self.algorithm = "iterative_deepening"
         return State.SOLVE
@@ -147,6 +161,22 @@ class Game:
       elif event.key == pygame.K_0:
         return State.ALGORITHM
     return State.HEURISTIC
+
+  def limitStateEventHandler(self, event):
+    if event.type == pygame.KEYDOWN:
+      if   event.key == pygame.K_ESCAPE:
+        self.limitStr = ""
+        return State.ALGORITHM
+      elif event.key == pygame.K_RETURN:
+        self.input_limit = False
+        self.limit = int(self.limitStr)
+        self.limitStr = ""
+        return State.SOLVE
+      if event.key == pygame.K_BACKSPACE:
+        self.limitStr = self.limitStr[:-1]
+      else:
+        self.limitStr += event.unicode
+    return State.LIMIT
 
   def showSolutionStateEventHandler(self, event): 
     if event.type == pygame.KEYDOWN:
