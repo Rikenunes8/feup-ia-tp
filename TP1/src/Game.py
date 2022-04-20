@@ -8,8 +8,6 @@ from Algorithms import SearchProblemsAlgorithms
 import time
 
 
-
-
 class State(Enum):
   MENU = 1
   CHOOSE_BOARD = 2
@@ -19,7 +17,8 @@ class State(Enum):
   LIMIT = 6
   SOLVE = 7
   SHOW_SOLUTION = 8
-  END = 9
+  ANALYSE = 9
+  END = 10
 
 class Game:
   def __init__(self):
@@ -35,7 +34,6 @@ class Game:
     self.initTime = None
     self.elapsedTime = None
     self.playing = False
-    
 
   def end(self):
     pygame.quit()
@@ -72,13 +70,11 @@ class Game:
       self.elapsedTime = round(time.time() - self.initTime)
 
     return State.RESOLVE
-
+  
   # Aks the algorithm to solve the puzzle by
   def solveState(self):
-    self.initTime = time.time()
     problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
     problem.run(self.algorithm, heuristic=self.heuristic, limit=self.limit)
-    self.elapsedTime = round(time.time() - self.initTime)
     self.solutionAI = problem.getSolution()
     return State.SHOW_SOLUTION
 
@@ -91,6 +87,8 @@ class Game:
         return State.RESOLVE
       elif event.key == pygame.K_3:
         return State.ALGORITHM
+      elif event.key == pygame.K_4:
+        return State.ANALYSE
       elif event.key == pygame.K_0:
         return State.END
     return State.MENU
@@ -164,18 +162,17 @@ class Game:
         return State.ALGORITHM
     return State.HEURISTIC
 
-
   def limitStateEventHandler(self, event):
     if event.type == pygame.KEYDOWN:
-      if   event.key == pygame.K_ESCAPE:
+      if event.key == pygame.K_ESCAPE:
         self.limitStr = ""
         return State.ALGORITHM
       elif event.key == pygame.K_RETURN:
-        self.input_limit = False
-        self.limit = int(self.limitStr)
-        self.limitStr = ""
-        return State.SOLVE
-      if event.key == pygame.K_BACKSPACE:
+        if self.limitStr and self.limitStr.isdigit():
+          self.limit = int(self.limitStr)
+          self.limitStr = ""
+          return State.SOLVE
+      elif event.key == pygame.K_BACKSPACE:
         self.limitStr = self.limitStr[:-1]
       else:
         self.limitStr += event.unicode
