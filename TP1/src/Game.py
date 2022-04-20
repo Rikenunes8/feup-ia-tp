@@ -16,9 +16,10 @@ class State(Enum):
   RESOLVE = 3
   ALGORITHM = 4
   HEURISTIC = 5
-  SOLVE = 6
-  SHOW_SOLUTION = 7
-  END = 8
+  LIMIT = 6
+  SOLVE = 7
+  SHOW_SOLUTION = 8
+  END = 9
 
 class Game:
   def __init__(self):
@@ -30,6 +31,7 @@ class Game:
     self.algorithm = None
     self.heuristic = 0
     self.limit = 3
+    self.limitStr = ""
     self.solutionAI = None
     self.initTime = None
     self.elapsedTime = None
@@ -134,7 +136,7 @@ class Game:
         return State.SOLVE
       elif event.key == pygame.K_3:
         self.algorithm = "depth_limited"
-        return State.SOLVE
+        return State.LIMIT
       elif event.key == pygame.K_4:
         self.algorithm = "iterative_deepening"
         return State.SOLVE
@@ -162,6 +164,23 @@ class Game:
       elif event.key == pygame.K_0:
         return State.ALGORITHM
     return State.HEURISTIC
+
+
+  def limitStateEventHandler(self, event):
+    if event.type == pygame.KEYDOWN:
+      if   event.key == pygame.K_ESCAPE:
+        self.limitStr = ""
+        return State.ALGORITHM
+      elif event.key == pygame.K_RETURN:
+        self.input_limit = False
+        self.limit = int(self.limitStr)
+        self.limitStr = ""
+        return State.SOLVE
+      if event.key == pygame.K_BACKSPACE:
+        self.limitStr = self.limitStr[:-1]
+      else:
+        self.limitStr += event.unicode
+    return State.LIMIT
 
   def showSolutionStateEventHandler(self, event): 
     if event.type == pygame.KEYDOWN:
