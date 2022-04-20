@@ -149,3 +149,10 @@ class Drawer:
     message = "Calculating " + algorithm + " solution " + heurStr
     self.drawText(message, TITLE_COLOR, WIDTH/2 - self.font.size(message)[0]/2, HEIGHT/2 - self.font.size(message)[1]/2)
     pygame.display.update()
+
+  def drawLimitState(self, limit):
+    self.screen.fill(BG_COLOR)
+    title = "Introduce the Limit:"
+    self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, HEIGHT/2 - self.font.size(limit)[1]*2)
+    self.drawText(limit, TEXT_COLOR, WIDTH/2 - self.font.size(limit)[0]/2, HEIGHT/2 - self.font.size(limit)[1]/2)
+    pygame.display.update()

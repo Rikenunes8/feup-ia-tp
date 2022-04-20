@@ -34,6 +34,8 @@ def main():
         appState = game.algorihtmMenuStateEventHandler(event)
       elif appState == State.HEURISTIC: 
         appState = game.heuristicMenuStateEventHandler(event)
+      elif appState == State.LIMIT:
+        appState = game.limitStateEventHandler(event)
       elif appState == State.SOLVE:
         continue
       elif appState == State.SHOW_SOLUTION: 
@@ -51,6 +53,8 @@ def main():
       drawer.drawOptionMenu(menusULM["algorithms"])
     elif appState == State.HEURISTIC:     
       drawer.drawOptionMenu(menusULM["heuristics"])
+    elif appState == State.LIMIT:
+      drawer.drawLimitState(game.limitStr)
     elif appState == State.SOLVE:         
       drawer.drawSolveState(game.algorithm, game.heuristic)
       appState = game.solveState()
