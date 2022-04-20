@@ -35,12 +35,15 @@ class Game:
     pygame.quit()
 
   def makeMove(self, direction):
-    ret = ULM.swap(self.stack[-1], direction)
-    if ret:
-      self.stack.append(ret["state"])
-    ret = ULM.move(self.stack[-1], direction)
-    if ret:
-      self.stack.append(ret["state"])
+    ret1 = ULM.swap(self.stack[-1], direction)
+    if ret1:
+      self.stack.append(ret1["state"])
+    ret2 = ULM.move(self.stack[-1], direction)
+    if ret2:
+      self.stack.append(ret2["state"])
+    
+    if (ret1 and (not ret2)):
+      self.stack.pop()
 
   def undoMove(self):
     if len(self.stack) == 1: return    
@@ -54,7 +57,9 @@ class Game:
 
   # Player Solves by him self # add here a space for error message and actions explanation
   def resolveState(self):
-    if ULM.isFinalState(self.stack[-1]): return State.MENU
+    if ULM.isFinalState(self.stack[-1]): 
+      self.stack = self.stack[:1]
+      return State.MENU
     else: return State.RESOLVE
 
   # Aks the algorithm to solve the puzzle by
