@@ -1,3 +1,4 @@
+import time
 from SearchProblem import SearchProblem, algorithmTypes
 
 class SearchProblemsAlgorithms:
@@ -5,8 +6,10 @@ class SearchProblemsAlgorithms:
     self.initState = initState
     self.isFinalState = isFinalState
     self.newTransitions = newTransitions
+    self.solution = (None, 0, 0, 0) # final_state, solution_depth, nodes_visited, elapsed_time
+
   
-  def showSolution(self, path, totalNodesVisited):
+  def showSolution(self, path, totalNodesVisited, elapsedTime):
     print("Search path:")
     if (path == None):
       print("No path found")
@@ -15,6 +18,11 @@ class SearchProblemsAlgorithms:
         print(state)
       print("Solution depth:", len(path)-1)
     print("Nodes visited:", totalNodesVisited)
+    print("Elapsed Time:", elapsedTime)
+
+  def getSolution(self):
+    return self.solution
+    
 
   def breadth(self):
     print("Calculating BFS solution...")
@@ -60,6 +68,8 @@ class SearchProblemsAlgorithms:
 
 
   def run(self, algorithm, heuristic=0, limit=-1):
+    start_time = time.time()
+
     if algorithmTypes[algorithm] == algorithmTypes["breadth"]:
       res = self.breadth()
     elif algorithmTypes[algorithm] == algorithmTypes["depth"]:
@@ -74,6 +84,8 @@ class SearchProblemsAlgorithms:
       res = self.greedy(heuristic)
     elif algorithmTypes[algorithm] == algorithmTypes["A*"]:
       res = self.aStar(heuristic)
-    
+
     (path, totalNodesVisited) = res
-    self.showSolution(path, totalNodesVisited)
+    elapsedTime = round(time.time() - start_time, 2)
+    self.solution = (path, 0 if path == None else len(path)-1, totalNodesVisited, elapsedTime)
+    self.showSolution(path, totalNodesVisited, elapsedTime)

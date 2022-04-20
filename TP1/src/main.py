@@ -1,187 +1,23 @@
 import pygame
-import UnequalLengthMazes as ULM
-from enum import Enum
-from copy import deepcopy
-from Algorithms import SearchProblemsAlgorithms
-
-BG_COLOR = '#888888'
-EMPTY_COLOR = '#DDDDDD'
-BLOCK_COLOR = '#000000'
-PATH_COLOR = '#FF0000'
-WIDTH, HEIGHT = 600, 600  
-
-class State(Enum):
-  MENU = 1
-  CHOOSE_BOARD = 2
-  RESOLVE = 3
-  SOLVE = 4
-  END = 5
+from Game import *
+from Drawer import Drawer
+from analysis import Analyser
 
 
-def showMenu():
-  print("\n*          MENU         *")
-  print("*-----------------------*")
-  print("1 - Choose Puzzle")
-  print("2 - Solve Puzzle by myself")
-  print("3 - Solve Puzzle by AI")
-  print("0 - Exit")
-
-def showAlgorithms():
-  print("\n*       Algorithm       *")
-  print("*-----------------------*")
-  print("1 - Breadth First Search")
-  print("2 - Depth First Search")
-  print("3 - Limited Depth First Search")
-  print("4 - Iterative Deepening")
-  print("5 - Uniform Cost")
-  print("6 - Greedy Algorithm")
-  print("7 - A* Algorithm")
-  print("0 - Back")
-
-def showHeuristics():
-  print("\n*      Heuristics       *")
-  print("*-----------------------*")
-  print("1 - Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle")
-  print("2 - Sum of each visited cell value. The value of a cell is a multiplication between its row and col.")
-  print("0 - Back")
-
-
-
-def solvePuzzle(problem):
-  algorithm = 1
-  while (algorithm != 0):
-    showAlgorithms()
-    algorithm = int(input("\nOption: "))
-
-    if   (algorithm == 1):  problem.run("breadth")
-    elif (algorithm == 2):  problem.run("depth")
-    elif (algorithm == 3):
-      limit = int(input("\nDepth Limit: "))
-      problem.run("depth_limited", limit=limit)
-    elif (algorithm == 4):  problem.run("iterative_deepening")
-    elif (algorithm == 5):  problem.run("uniform")
-    elif (algorithm == 6):
-      showHeuristics()
-      heuristic = int(input("\nOption: "))
-      if (heuristic <= 0): continue
-      problem.run("greedy", heuristic=heuristic)
-    elif (algorithm == 7):
-      showHeuristics()
-      heuristic = int(input("\nOption: "))
-      if (heuristic <= 0): continue
-      problem.run("A*", heuristic=heuristic)
-    else: return -1
-
-
-
-def draw(screen, board):
-  rows = len(board)
-  cols = len(board[0])
-  size = WIDTH / max(rows, cols)
-
-  screen.fill(BG_COLOR)
-
-  for i in range(rows):
-    y = size*i
-    for j in range(cols):
-      x = size*j
-      value = board[i][j]
-      if value == ULM.BC:
-        pygame.draw.rect(screen, BLOCK_COLOR, (x, y, size, size))
-      else: 
-        pygame.draw.rect(screen, EMPTY_COLOR, (x, y, size, size))
-      pygame.draw.rect(screen, "black", (x, y, size, size), 2)
-  for i in range(rows):
-    y = size*i
-    for j in range(cols):
-      x = size*j
-      value = board[i][j]
-      if value == ULM.UP:
-        pygame.draw.rect(screen, PATH_COLOR, (x+size/3, y+size*2/6, size/3, size*8/6))
-      elif value == ULM.DOWN:
-        pygame.draw.rect(screen, PATH_COLOR, (x+size/3, y-size*4/6, size/3, size*8/6))
-      elif value == ULM.LEFT:
-        pygame.draw.rect(screen, PATH_COLOR, (x+size*2/6, y+size/3, size*8/6, size/3))
-      elif value == ULM.RIGHT:
-        pygame.draw.rect(screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
-
-  pygame.display.update()
-
-
-
-def makeMove(stack, direction):
-  ret = ULM.swap(stack[-1], direction)
-  if ret:
-    stack.append(ret["state"])
-  ret = ULM.move(stack[-1], direction)
-  if ret:
-    stack.append(ret["state"])
-
-def undoMove(stack):
-  if len(stack) == 1: return    
-  stack.pop()
-  while True and stack:
-    (board, (x, y, d, l), last) = stack[-1]
-    if l != 0 or last == None:
-      break
-    stack.pop() 
-
-
-def menuState():
-  showMenu()
-  ask = True
-  while ask:
-    ask = False
-    try: option = int(input("\nOption: "))
-    except: ask = True
-  if (option == 1): 
-    return State.CHOOSE_BOARD
-  elif (option == 2):
-    return State.RESOLVE
-  elif (option == 3):
-    return State.SOLVE
-  else:
-    return State.END
-
-def chooseBoardState(stack):
-  n = int(input("\nPuzzle: "))
-  ULM.setInitState(n)
-  stack.clear()
-  stack.append(deepcopy(ULM.initState))
-  return State.MENU
-
-def resolveState(stack):
-  if ULM.isFinalState(stack[-1]): return State.MENU
-  else: return State.RESOLVE
-
-def solveState():
-  problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
-  solvePuzzle(problem)
-  return State.MENU
-
-def resolveStateEventHandler(event, stack):
-  if event.type == pygame.KEYDOWN:
-    if event.key == pygame.K_UP:
-      makeMove(stack, "up")
-    elif event.key == pygame.K_DOWN:
-      makeMove(stack, "down")
-    elif event.key == pygame.K_LEFT:
-      makeMove(stack, "left")
-    elif event.key == pygame.K_RIGHT:
-      makeMove(stack, "right")
-    elif event.key == pygame.K_BACKSPACE:
-      undoMove(stack)
-
+menusULM = {
+  "main_menu" : ("ULM", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
+  "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
+  # "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
+  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan', 'Sum of each visited cell value (row X col weight)', 'Back']),
+}
 
 def main():
-  pygame.init()
-  screen = pygame.display.set_mode((WIDTH, HEIGHT))  
-  pygame.display.set_caption('Unequal Length Mazes')
+  game = Game()  
+  drawer = Drawer()
+  analyser = Analyser()
 
+  drawer.drawOptionMenu(menusULM["main_menu"])
   appState = State.MENU
-  ULM.setInitState(0)
-  stack = []
-  stack.append(deepcopy(ULM.initState))
 
   run = True
   while run:
@@ -189,18 +25,47 @@ def main():
       if event.type == pygame.QUIT:
         appState = State.END
         break
-      if appState == State.RESOLVE:
-        resolveStateEventHandler(event, stack)
+      lastState = appState
+      if appState == State.MENU: 
+        appState = game.mainMenuStateEventHandler(event)
+      elif appState == State.CHOOSE_BOARD:
+        appState = game.chooseBoardStateEventHandler(event)
+      elif appState == State.RESOLVE:
+        appState = game.resolveStateEventHandler(event)
+      elif appState == State.ALGORITHM: 
+        appState = game.algorihtmMenuStateEventHandler(event)
+      elif appState == State.HEURISTIC: 
+        appState = game.heuristicMenuStateEventHandler(event)
+      elif appState == State.SOLVE:
+        continue
+      elif appState == State.SHOW_SOLUTION: 
+        appState = game.showSolutionStateEventHandler(event)
+      if (appState != lastState): break
     
-    if   appState == State.MENU:          appState = menuState()
-    elif appState == State.CHOOSE_BOARD:  appState = chooseBoardState(stack)      
-    elif appState == State.RESOLVE:       appState = resolveState(stack)
-    elif appState == State.SOLVE:         appState = solveState()
-    elif appState == State.END:           run = False
-    draw(screen, stack[-1][0])
-
+    if   appState == State.MENU:          
+      drawer.drawOptionMenu(menusULM["main_menu"])
+    elif appState == State.CHOOSE_BOARD:  
+      drawer.drawChooseBoardMenu()
+    elif appState == State.RESOLVE:       
+      drawer.drawResolveState(game.stack[-1][0])
+      appState = game.resolveState()
+    elif appState == State.ALGORITHM:     
+      drawer.drawOptionMenu(menusULM["algorithms"])
+    elif appState == State.HEURISTIC:     
+      drawer.drawOptionMenu(menusULM["heuristics"])
+    elif appState == State.SOLVE:         
+      drawer.drawSolveState(game.algorithm, game.heuristic)
+      appState = game.solveState()
+    elif appState == State.SHOW_SOLUTION: 
+      drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic)
+    elif appState == State.ANALYSE: 
+        drawer.drawAnalyseState()
+        analyser.analyse(len(menusULM["heuristics"][1])-1)
+        appState = State.MENU
+    elif appState == State.END:
+      run = False
       
-  pygame.quit()
+  game.end()
 
   
 if __name__=='__main__':

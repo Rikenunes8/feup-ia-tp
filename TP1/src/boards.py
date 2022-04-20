@@ -2,6 +2,9 @@ EC = 0
 VC = 8
 BC = 9
 
+# List of boards to display
+boardsULM = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] 
+
 initBoards =( # 0
              [[EC, EC, BC, BC, EC, EC],
               [EC, EC, EC, EC, EC, BC],
