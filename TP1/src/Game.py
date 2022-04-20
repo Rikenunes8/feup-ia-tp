@@ -5,6 +5,7 @@ import pygame
 import UnequalLengthMazes as ULM
 from boards import boardsULM
 from Algorithms import SearchProblemsAlgorithms
+import time
 
 
 
@@ -30,6 +31,10 @@ class Game:
     self.heuristic = 0
     self.limit = 3
     self.solutionAI = None
+    self.initTime = None
+    self.elapsedTime = None
+    self.started = False
+    
 
   def end(self):
     pygame.quit()
@@ -57,15 +62,23 @@ class Game:
 
   # Player Solves by him self # add here a space for error message and actions explanation
   def resolveState(self):
-    if ULM.isFinalState(self.stack[-1]): 
+    if not self.started:
+      self.started = True
+      self.initTime = time.time()
+    else: 
+      self.elapsedTime = round(time.time() - self.initTime)
+    if ULM.isFinalState(self.stack[-1]):
+      self.started = False
       self.stack = self.stack[:1]
       return State.MENU
     else: return State.RESOLVE
 
   # Aks the algorithm to solve the puzzle by
   def solveState(self):
+    self.initTime = time.time()
     problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
     problem.run(self.algorithm, heuristic=self.heuristic, limit=self.limit)
+    self.elapsedTime = round(time.time() - self.initTime)
     self.solutionAI = problem.getSolution()
     return State.SHOW_SOLUTION
 

@@ -42,12 +42,12 @@ def main():
     
     if   appState == State.MENU:          
       drawer.drawOptionMenu(menusULM["main_menu"])
-    elif appState == State.CHOOSE_BOARD:  
+    elif appState == State.CHOOSE_BOARD:
       drawer.drawChooseBoardMenu()
-    elif appState == State.RESOLVE:       
-      drawer.drawResolveState(game.stack[-1][0])
+    elif appState == State.RESOLVE:
+      drawer.drawResolveState(game.stack[-1][0], game.elapsedTime)
       appState = game.resolveState()
-    elif appState == State.ALGORITHM:     
+    elif appState == State.ALGORITHM:
       drawer.drawOptionMenu(menusULM["algorithms"])
     elif appState == State.HEURISTIC:     
       drawer.drawOptionMenu(menusULM["heuristics"])
@@ -55,7 +55,7 @@ def main():
       drawer.drawSolveState(game.algorithm, game.heuristic)
       appState = game.solveState()
     elif appState == State.SHOW_SOLUTION: 
-      drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic)
+      drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic, game.elapsedTime)
     elif appState == State.END:
       run = False
       

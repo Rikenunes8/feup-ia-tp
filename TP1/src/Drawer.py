@@ -89,7 +89,8 @@ class Drawer:
     rows = len(board)
     cols = len(board[0])
     size = min(height/rows, width/cols)
-
+    offX += (width - size*cols) / 2
+    offY += (height - size*rows) / 2
     for i in range(rows):
       y = size*i + offY
       for j in range(cols):
@@ -114,7 +115,7 @@ class Drawer:
         elif value == ULM.RIGHT:
           pygame.draw.rect(self.screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
-  def drawSolutionAI(self, solutionAI, algorithm, heuristic):
+  def drawSolutionAI(self, solutionAI, algorithm, heuristic, elapsedTime):
     self.screen.fill(BG_COLOR)
 
     offset_x, offset_y = 20, 30
@@ -129,18 +130,30 @@ class Drawer:
     board = None if path == None else path[-1][0]
     depthStr = "Solution Depth: " + str(depth)
     nodesStr = "Nodes Visited: " + str(nodes)
-    textsize = self.font.size(max([depthStr, nodesStr], key = len))[0] + offset_x
+    elapsedStr = "Time: " + str(elapsedTime)
+    textsize = self.font.size(max([depthStr, nodesStr, elapsedStr], key = len))[0] + offset_x
 
     if (board == None): self.drawText("No Solution Found", TEXT_COLOR, offset_x, offset_y + (HEIGHT - offset_y - offset_x)/2 - FONT_SIZE)
     else: self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x, WIDTH - offset_x*2 - textsize)
     self.drawText(depthStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE)
     self.drawText(nodesStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*2)
+    self.drawText(elapsedStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*3)
 
     pygame.display.update()
 
-  def drawResolveState(self, board):
+  def drawResolveState(self, board, elapsedTime):
     self.screen.fill(BG_COLOR)
-    self.drawBoard(board)
+    offset_x, offset_y = 20, 30
+    title = "Unequal Length Maze"
+    self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
+    offset_y += self.font.size(title)[1] + FONT_SIZE/2
+
+    elapsedStr = "Time: " + str(elapsedTime)
+    textsize = self.font.size(max([elapsedStr], key = len))[0] + offset_x
+
+    self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x - FONT_SIZE, WIDTH - offset_x)
+    self.drawText(elapsedStr, TEXT_COLOR, WIDTH - textsize, HEIGHT - FONT_SIZE)
+
     pygame.display.update()
 
   def drawSolveState(self, algorithm, heuristic):
