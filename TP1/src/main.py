@@ -1,7 +1,7 @@
 import pygame
 from Game import *
 from Drawer import Drawer
-from analysis import Analyser
+from Analyser import Analyser
 
 
 menusULM = {
