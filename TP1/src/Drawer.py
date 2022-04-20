@@ -136,7 +136,7 @@ class Drawer:
     textsize = self.font.size(max([depthStr, nodesStr, timeStr], key = len))[0] + offset_x
 
     if (board == None): self.drawText("No Solution Found", TEXT_COLOR, offset_x, offset_y + (HEIGHT - offset_y - offset_x)/2 - FONT_SIZE)
-    else: self.drawBoard(board, offset_x, offset_y, WIDTH - offset_x*2 - textsize, HEIGHT - offset_y - offset_x)
+    else: self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x, WIDTH - offset_x*2 - textsize)
     self.drawText(depthStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE)
     self.drawText(nodesStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*2)
     self.drawText(timeStr, TEXT_COLOR, WIDTH - textsize, offset_y + FONT_SIZE*4)
@@ -158,6 +158,8 @@ class Drawer:
     self.drawText(elapsedStr, TEXT_COLOR, offset_x, HEIGHT - FONT_SIZE)
     if won:
       self.drawText(victory, GREEN_COLOR, WIDTH - offset_x - self.font.size(victory)[0], HEIGHT - FONT_SIZE)
+    pygame.display.update()
+
 
   def drawSolveState(self, algorithm, heuristic):
     self.screen.fill(BG_COLOR)
