@@ -5,7 +5,17 @@ from boards import boardsULM
 # Number of rows and columns of the grid according to the number of boards to display
 boardsGrid = {
   0 : (0, 0), 1 : (1, 1), 2 : (1, 2), 3 : (2, 2), 4 : (2, 2), 5 : (2, 3), 
-  6 : (2, 3), 7 : (2, 4), 8 : (2, 4), 9 : (3, 3), 10: (3, 4), 11: (3, 4), 12: (3, 4) 
+  6 : (2, 3), 7 : (2, 4), 8 : (2, 4), 9 : (3, 3), 10: (3, 4), 11: (3, 4), 12: (3, 4), 20: (4, 5), 25: (5, 5)
+}
+
+algorithmTranslate = {
+  "breadth": "BFS",
+  "depth": "DFS",
+  "depth_limited": "Limited DFS",
+  "iterative_deepening": "Iterative Deepening",
+  "uniform": "Uniform Cost",
+  "greedy": "Greedy",
+  "A*": "A*",
 }
 
 BG_COLOR = '#888888'
@@ -64,9 +74,9 @@ class Drawer:
     title = "Choose Board"
     self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
 
-    offset_y += self.font.size(title)[1] + FONT_SIZE/2
+    offset_y += self.font.size(title)[1] + FONT_SIZE/3
     
-    grid_marginX, grid_marginY = 30, 5
+    grid_marginX, grid_marginY = 30, 15
     (grid_nRows, grid_nCols) = boardsGrid[len(boardsULM)]
     row_size = (HEIGHT - offset_y - grid_marginY) / grid_nRows
     col_size = (WIDTH - grid_marginX) / grid_nCols
@@ -117,13 +127,14 @@ class Drawer:
         elif value == ULM.RIGHT:
           pygame.draw.rect(self.screen, PATH_COLOR, (x-size*4/6, y+size/3, size*8/6, size/3))
 
-  def drawSolutionAI(self, solutionAI, algorithm, heuristic):
+  def drawSolutionAI(self, solutionAI, algorithm, heuristic, limit):
     self.screen.fill(BG_COLOR)
 
     offset_x, offset_y = 20, 30
 
-    heurStr = " [h() : " + str(heuristic) + "]" if (algorithm == "greedy" or algorithm == "A*") else ""
-    title = "Solution Found by " + algorithm + heurStr
+    heurStr = " [h()=" + str(heuristic) + "]" if (algorithm == "greedy" or algorithm == "A*") else ""
+    limitStr = " [limit=" + str(limit) + "]" if (algorithm == "depth_limited") else ""
+    title = "Solution Found by " + algorithmTranslate[algorithm] + heurStr + limitStr
     self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
 
     offset_y += self.font.size(title)[1] + FONT_SIZE/2
@@ -146,7 +157,7 @@ class Drawer:
   def drawResolveState(self, board, elapsedTime, won):
     self.screen.fill(BG_COLOR)
     offset_x, offset_y = 20, 30
-    title = "Unequal Length Maze"
+    title = "Unequal Length Mazes"
     victory = "Victory"
     self.drawText(title, TITLE_COLOR, WIDTH/2 - self.font.size(title)[0]/2, offset_y)
     offset_y += self.font.size(title)[1] + FONT_SIZE/2
@@ -161,10 +172,11 @@ class Drawer:
     pygame.display.update()
 
 
-  def drawSolveState(self, algorithm, heuristic):
+  def drawSolveState(self, algorithm, heuristic, limit):
     self.screen.fill(BG_COLOR)
-    heurStr = " [h() : " + str(heuristic) + "] ..." if (algorithm == "greedy" or algorithm == "A*") else "..."
-    message = "Calculating " + algorithm + " solution " + heurStr
+    heurStr = " [h()=" + str(heuristic) + "] " if (algorithm == "greedy" or algorithm == "A*") else ""
+    limitStr = " [limit=" + str(limit) + "] " if (algorithm == "depth_limited") else ""
+    message = "Calculating " + algorithmTranslate[algorithm] + " solution " + heurStr + limitStr + "..."
     self.drawText(message, TITLE_COLOR, WIDTH/2 - self.font.size(message)[0]/2, HEIGHT/2 - self.font.size(message)[1]/2)
     pygame.display.update()
 

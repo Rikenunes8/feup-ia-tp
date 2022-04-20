@@ -164,15 +164,15 @@ class Game:
 
   def limitStateEventHandler(self, event):
     if event.type == pygame.KEYDOWN:
-      if   event.key == pygame.K_ESCAPE:
+      if event.key == pygame.K_ESCAPE:
         self.limitStr = ""
         return State.ALGORITHM
       elif event.key == pygame.K_RETURN:
-        self.input_limit = False
-        self.limit = int(self.limitStr)
-        self.limitStr = ""
-        return State.SOLVE
-      if event.key == pygame.K_BACKSPACE:
+        if self.limitStr and self.limitStr.isdigit():
+          self.limit = int(self.limitStr)
+          self.limitStr = ""
+          return State.SOLVE
+      elif event.key == pygame.K_BACKSPACE:
         self.limitStr = self.limitStr[:-1]
       else:
         self.limitStr += event.unicode
