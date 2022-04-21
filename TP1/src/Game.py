@@ -1,11 +1,10 @@
+import time
+import pygame
 import UnequalLengthMazes as ULM
 from enum import Enum
 from copy import deepcopy
-import pygame
-import UnequalLengthMazes as ULM
 from boards import boardsULM
 from Algorithms import SearchProblemsAlgorithms
-import time
 
 
 class State(Enum):
