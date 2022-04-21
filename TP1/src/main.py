@@ -24,7 +24,6 @@ def main():
       if event.type == pygame.QUIT:
         appState = State.END
         break
-      lastState = appState
       if appState == State.MENU: 
         appState = game.mainMenuStateEventHandler(event)
       elif appState == State.CHOOSE_BOARD:
@@ -37,11 +36,8 @@ def main():
         appState = game.heuristicMenuStateEventHandler(event)
       elif appState == State.LIMIT:
         appState = game.limitStateEventHandler(event)
-      elif appState == State.SOLVE:
-        continue
       elif appState == State.SHOW_SOLUTION: 
         appState = game.showSolutionStateEventHandler(event)
-      if (appState != lastState): break
     
     if   appState == State.MENU:          
       drawer.drawOptionMenu(menusULM["main_menu"])
