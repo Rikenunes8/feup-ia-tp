@@ -12,11 +12,12 @@ algorithmTypes = {
 }
 
 class SearchProblem:
-  def __init__(self, initState, isFinalState):
+  def __init__(self, initState, isFinalState, checkVisited=False):
     self.initState = deepcopy(initState)
     self.queue = [Tree.Node(initState, 0, 0, 0, -1)]
     self.isFinalState = isFinalState
     self.visited = []
+    self.checkVisited = checkVisited
   
   def getPath(self, node: Tree.Node):
     path = []
@@ -53,9 +54,9 @@ class SearchProblem:
       currentNode = self.queue.pop(0)
       totalNodesVisited += 1
       currentState = currentNode.state
-      # print("currentState:", currentState) # TODO
 
-      self.visited.append(str(currentState))
+      if self.checkVisited: 
+        self.visited.append(str(currentState))
       
       if self.isFinalState(currentState):
         break
@@ -63,7 +64,8 @@ class SearchProblem:
       if (algorithm == algorithmTypes["depth_limited"] and currentNode.depth >= limit): 
         continue
       currTransitions = newTransitions(currentNode, heuristic)
-      currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
+      if self.checkVisited:
+        currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
         self.queue.append(transition)
