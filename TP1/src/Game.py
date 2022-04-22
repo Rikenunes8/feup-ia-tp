@@ -33,9 +33,22 @@ class Game:
     self.initTime = None
     self.elapsedTime = None
     self.playing = False
+    self.hint = ''
 
   def end(self):
     pygame.quit()
+
+  def setHint(self):
+    path = self.solutionAI[0] if self.solutionAI != None else None
+    if path == None:
+      s = 'No hint yet'
+    else:
+      f = list(map(lambda x:str(x[0]) == str(x[1]), zip(self.stack, path)))
+      if all(f):
+        s = path[len(f)][1][2]
+      else:
+        s = 'Back'
+    self.hint = s.upper()
 
   def makeMove(self, direction):
     ret1 = ULM.swap(self.stack[-1], direction)
@@ -105,6 +118,13 @@ class Game:
 
   def resolveStateEventHandler(self, event):
     if event.type == pygame.KEYDOWN:
+      self.hint = ''
+      if event.key == pygame.K_ESCAPE:
+        self.stack.clear()
+        self.stack.append(deepcopy(ULM.initState))
+        self.playing = False
+        return State.MENU
+      if not self.playing: return State.RESOLVE
       if event.key == pygame.K_UP:
         self.makeMove("up")
       elif event.key == pygame.K_DOWN:
@@ -115,11 +135,8 @@ class Game:
         self.makeMove("right")
       elif event.key == pygame.K_BACKSPACE:
         self.undoMove()
-      elif event.key == pygame.K_ESCAPE:
-        self.stack.clear()
-        self.stack.append(deepcopy(ULM.initState))
-        self.playing = False
-        return State.MENU
+      elif event.key == pygame.K_h:
+        self.setHint()
     return State.RESOLVE
 
   def algorihtmMenuStateEventHandler(self, event):

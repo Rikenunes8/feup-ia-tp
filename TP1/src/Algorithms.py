@@ -6,7 +6,7 @@ class SearchProblemsAlgorithms:
     self.initState = initState
     self.isFinalState = isFinalState
     self.newTransitions = newTransitions
-    self.solution = (None, 0, 0, 0) # final_state, solution_depth, nodes_visited, elapsed_time
+    self.solution = (None, 0, 0, 0) # path, solution_depth, nodes_visited, elapsed_time
 
   
   def showSolution(self, path, totalNodesVisited, elapsedTime):

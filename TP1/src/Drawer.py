@@ -154,7 +154,7 @@ class Drawer:
 
     pygame.display.update()
 
-  def drawResolveState(self, board, elapsedTime, won):
+  def drawResolveState(self, board, elapsedTime, won, hint):
     self.screen.fill(BG_COLOR)
     offset_x, offset_y = 20, 30
     title = "Unequal Length Mazes"
@@ -163,10 +163,10 @@ class Drawer:
     offset_y += self.font.size(title)[1] + FONT_SIZE/2
 
     elapsedStr = "Time: " + str(elapsedTime)
-    textsize = self.font.size(max([elapsedStr], key = len))[0] + offset_x
 
     self.drawBoard(board, offset_x, offset_y, HEIGHT - offset_y - offset_x - FONT_SIZE, WIDTH - offset_x)
     self.drawText(elapsedStr, TEXT_COLOR, offset_x, HEIGHT - FONT_SIZE)
+    self.drawText(hint, TEXT_COLOR, WIDTH/2 - self.font.size(hint)[0]/2, HEIGHT-FONT_SIZE)
     if won:
       self.drawText(victory, GREEN_COLOR, WIDTH - offset_x - self.font.size(victory)[0], HEIGHT - FONT_SIZE)
     pygame.display.update()
