@@ -37,17 +37,26 @@ class Game:
 
   def end(self):
     pygame.quit()
-
-  def setHint(self):
+  
+  def calculateHint(self):
     path = self.solutionAI[0] if self.solutionAI != None else None
-    if path == None:
-      s = 'No hint yet'
+    strStack = list(map(lambda x: str(x), self.stack))
+
+    if path == None or str(path[0]) not in strStack:
+      problem = SearchProblemsAlgorithms(self.stack[-1], ULM.isFinalState, ULM.newTransitions)
+      problem.run('depth')
+      self.solutionAI = problem.getSolution()
+      if self.solutionAI[0] == None:
+        s = 'back'
+      else:
+        s = self.solutionAI[0][1][1][2]
     else:
-      f = list(map(lambda x:str(x[0]) == str(x[1]), zip(self.stack, path)))
+      strStack = strStack[strStack.index(str(path[0])):]
+      f = list(map(lambda x: x[0] == str(x[1]), zip(strStack, path)))
       if all(f):
         s = path[len(f)][1][2]
       else:
-        s = 'Back'
+        s = 'back'
     self.hint = s.upper()
 
   def makeMove(self, direction):
@@ -136,7 +145,8 @@ class Game:
       elif event.key == pygame.K_BACKSPACE:
         self.undoMove()
       elif event.key == pygame.K_h:
-        self.setHint()
+        # self.setHint()
+        self.calculateHint()
     return State.RESOLVE
 
   def algorihtmMenuStateEventHandler(self, event):

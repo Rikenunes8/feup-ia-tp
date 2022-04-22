@@ -17,9 +17,9 @@ class Analyser:
           #f.write(self.analyseDepthLimit(problem, algorithm, lowerLimit))
         if (algorithm == "greedy" or algorithm == "A*"):
           f.write(self.analyseHeuristics(board, problem, algorithm, n_heuristics))
-        elif(algorithm != "depth_limited" and algorithm != "iterative_deepening"):
-          problem.run(algorithm)
-          f.write(self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, '-'))
+        # elif(algorithm != "depth_limited" and algorithm != "iterative_deepening"):
+        #   problem.run(algorithm)
+        #   f.write(self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, '-'))
 
       f.write('\n')
     f.close()
@@ -34,9 +34,9 @@ class Analyser:
 
   def analyseHeuristics(self, board, problem, algorithm, n_heuristics):
     resultStr = ""
-    for heuristic in range(1, n_heuristics+1):
-      problem.run(algorithm, heuristic=heuristic)
-      resultStr += self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, heuristic)
+    # for heuristic in range(1, n_heuristics+1):
+    problem.run(algorithm, heuristic=3)
+    resultStr += self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, 3)
     return resultStr
 
   def calculateLowerLimit(self, initBoard):
