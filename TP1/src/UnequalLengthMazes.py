@@ -76,7 +76,7 @@ def swap(state, direction):
     dir = direction
     lastSegment = length
     length = 0
-    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 10}
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 2}
   return False
 
 def emptyAdjacents(state, i, j):
