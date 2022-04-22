@@ -21,12 +21,7 @@ class SearchProblemsAlgorithms:
     print("Elapsed Time:", elapsedTime)
 
   def getSolution(self):
-    return self.solution
-    
-
-  def getSolution(self):
-    return self.solution
-    
+    return self.solution    
 
   def breadth(self):
     print("Calculating BFS solution...")
