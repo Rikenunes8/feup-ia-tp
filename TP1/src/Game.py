@@ -48,7 +48,7 @@ class Game:
 
     if path == None or str(path[0]) not in strStack:
       problem = SearchProblemsAlgorithms(self.stack[-1], ULM.isFinalState, ULM.newTransitions)
-      problem.run('depth')
+      problem.run('A*', heuristic=3)
       self.solutionAI = problem.getSolution()
       if self.solutionAI[0] == None:
         s = 'back'
@@ -94,7 +94,7 @@ class Game:
       self.hintsUsed = 0
     else: 
       self.elapsedTime = round(time.time() - self.initTime)
-      self.score = self.elapsedTime + self.hintsUsed*15
+      self.score = self.elapsedTime + self.hintsUsed*20
 
     return State.RESOLVE
   

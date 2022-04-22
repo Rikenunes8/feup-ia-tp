@@ -76,7 +76,7 @@ def swap(state, direction):
     dir = direction
     lastSegment = length
     length = 0
-    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 2}
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 0}
   return False
 
 def emptyAdjacents(state, i, j):
@@ -85,7 +85,7 @@ def emptyAdjacents(state, i, j):
   for direction in propDir.keys():
     (offX, offY) = propDir[direction]["step"]
     x, y = i+offX, j+offY
-    if edge(direction, x, y) and ((x == row and y == col) or board[x][y] == EC):
+    if edge(direction, i, j) and ((x == row and y == col) or board[x][y] == EC):
       c += 1
   return c
 
@@ -101,13 +101,13 @@ def heuristics(state, type):
     else: return 1/dist
   elif type == 2:
     value = 0
-    num_visited = 0
     for i in range(len(board)):
       for j in range(len(board[i])):
-        if (board[i][j] == VC):
-          num_visited += 1
-          value += (H-i)*(j+1)
-    return value / num_visited
+        if (board[i][j] == EC):
+          value += abs(i-j)
+          if (i != 0 and j != W-1) and emptyAdjacents(state, i, j) < 2:
+            return 99999
+    return value
   elif type == 3:
     emptyCells = 0
     for i in range(len(board)):
@@ -115,8 +115,8 @@ def heuristics(state, type):
         if (board[i][j] == EC and (i != 0 and j != W-1)):
           emptyCells += 1
           if emptyAdjacents(state, i, j) < 2:
-            return 9999999
-    return emptyCells
+            return 99999
+    return emptyCells * 2
   return 0
 
 def newTransitions(node: Tree.Node, heuristic):

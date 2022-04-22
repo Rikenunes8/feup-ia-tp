@@ -57,22 +57,6 @@ class SearchProblem:
         return mid
     return lower
 
-  def printNodeValue(self, algorithm, node):
-    if algorithm == algorithmTypes["breadth"]:
-      return str(node.depth)
-    elif algorithm == algorithmTypes["depth"]:
-      return str(-node.depth)
-    elif algorithm == algorithmTypes["depth_limited"]:
-      return str(-node.depth)
-    elif algorithm == algorithmTypes["iterative_deepening"]:
-      return str(-node.depth)
-    elif algorithm == algorithmTypes["uniform"]:
-      return str(node.cost)
-    elif algorithm == algorithmTypes["greedy"]:
-      return str(node.heuristic)
-    elif algorithm == algorithmTypes["A*"]:
-      return str(node.cost + node.heuristic)
-
   def search(self, newTransitions, algorithm, heuristic=0, limit=-1):
     totalNodesVisited = 0
     while True:

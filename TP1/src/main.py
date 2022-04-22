@@ -6,7 +6,7 @@ from Analyser import Analyser
 menusULM = {
   "main_menu" : ("Unequal Length Mazes", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
-  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from last move', 'Sum of each visited cell value (row X col weight)', 'Forbid Dead End States', 'Back']),
+  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from last move', 'Sum of each empty cell value with dead end cuts', 'Number of empty cells with dead end cuts', 'Back']),
 }
 
 def main():
@@ -44,14 +44,14 @@ def main():
     elif appState == State.SHOW_SOLUTION: 
       drawer.drawSolutionAI(game.solutionAI, game.algorithm, game.heuristic, game.limit)
     elif appState == State.ANALYSE: 
-        drawer.drawAnalyseState()
-        analyser.analyse(len(menusULM["heuristics"][1])-1)
-        appState = State.MENU
+      drawer.drawAnalyseState()
+      analyser.analyse(len(menusULM["heuristics"][1])-1)
+      appState = State.MENU
     elif appState == State.END:
       run = False
       
   game.end()
 
-  
+
 if __name__=='__main__':
   main()
