@@ -5,7 +5,7 @@ import boards
 class Analyser:
 
     def analyse(self, n_heuristics):
-        f = open("analysis.txt", "w")
+        f = open("analysis.csv", "w")
         for board in range(len(boards.initBoards)):
             ULM.setInitState(board)
             problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
@@ -18,7 +18,7 @@ class Analyser:
                     f.write(self.analyseHeuristics(board, problem, algorithm, n_heuristics))
                 elif(algorithm != "depth_limited" and algorithm != "iterative_deepening"):
                     problem.run(algorithm)
-                    f.write(self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, 0))
+                    f.write(self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, '-'))
 
             f.write('\n')
         f.close()

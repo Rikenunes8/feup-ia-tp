@@ -1,3 +1,4 @@
+import bisect
 import Tree
 from copy import deepcopy
 
@@ -44,6 +45,35 @@ class SearchProblem:
     elif algorithm == algorithmTypes["A*"]:
       self.queue.sort(key=lambda node: node.cost + node.heuristic)
 
+  def lessThanNode(self, algorithm, node1, node2):
+    if algorithm == algorithmTypes["breadth"]:
+      return node1.depth < node2.depth
+    elif algorithm == algorithmTypes["depth"]:
+      return -node1.depth < -node2.depth
+    elif algorithm == algorithmTypes["depth_limited"]:
+      return -node1.depth < -node2.depth
+    elif algorithm == algorithmTypes["iterative_deepening"]:
+      return -node1.depth < -node2.depth
+    elif algorithm == algorithmTypes["uniform"]:
+      return node1.cost < node2.cost
+    elif algorithm == algorithmTypes["greedy"]:
+      return node1.heuristic < node2.heuristic
+    elif algorithm == algorithmTypes["A*"]:
+      return node1.cost + node1.heuristic < node2.cost + node2.heuristic
+
+  def getInsertPosition(self, algorithm, node):
+    if not self.queue: return 0
+    lo, hi = 0, len(self.queue)-1
+    while lo <= hi:
+      mid = (lo + hi) // 2
+      if self.lessThanNode(algorithm, self.queue[mid], node):
+        lo = mid + 1
+      if self.lessThanNode(algorithm, node, self.queue[mid]):
+        hi = mid - 1
+      else:
+        return mid
+    return mid
+  
   def search(self, newTransitions, algorithm, heuristic=0, limit=-1):
     totalNodesVisited = 0
     while True:
@@ -68,9 +98,8 @@ class SearchProblem:
         currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
-        self.queue.append(transition)
-      
-      self.sortQueue(algorithm)
+        self.queue.insert(self.getInsertPosition(algorithm, transition), transition)
+
     
     path = self.getPath(currentNode)
     return (path, totalNodesVisited)
