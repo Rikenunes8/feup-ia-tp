@@ -27,22 +27,6 @@ class SearchProblem:
       currentNode = currentNode.parent
     path.insert(0, currentNode.state)
     return path
-  
-  # def sortQueue(self, algorithm):
-  #   if algorithm == algorithmTypes["breadth"]:
-  #     self.queue.sort(key=lambda node: node.depth)
-  #   elif algorithm == algorithmTypes["depth"]:
-  #     self.queue.sort(key=lambda node: -node.depth)
-  #   elif algorithm == algorithmTypes["depth_limited"]:
-  #     self.queue.sort(key=lambda node: -node.depth)
-  #   elif algorithm == algorithmTypes["iterative_deepening"]:
-  #     self.queue.sort(key=lambda node: -node.depth)
-  #   elif algorithm == algorithmTypes["uniform"]:
-  #     self.queue.sort(key=lambda node: node.cost)
-  #   elif algorithm == algorithmTypes["greedy"]:
-  #     self.queue.sort(key=lambda node: node.heuristic)
-  #   elif algorithm == algorithmTypes["A*"]:
-  #     self.queue.sort(key=lambda node: node.cost + node.heuristic)
 
   def lessThanNode(self, algorithm, node1, node2):
     if algorithm == algorithmTypes["breadth"]:

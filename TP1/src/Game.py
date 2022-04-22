@@ -30,10 +30,14 @@ class Game:
     self.limit = 3
     self.limitStr = ""
     self.solutionAI = None
+    
+    # Solitaire Game Attributes
     self.initTime = None
     self.elapsedTime = None
     self.playing = False
     self.hint = ''
+    self.hintsUsed = 0
+    self.score = 0
 
   def end(self):
     pygame.quit()
@@ -87,8 +91,10 @@ class Game:
     elif not self.playing:
       self.playing = True
       self.initTime = time.time()
+      self.hintsUsed = 0
     else: 
       self.elapsedTime = round(time.time() - self.initTime)
+      self.score = self.elapsedTime + self.hintsUsed*15
 
     return State.RESOLVE
   
@@ -117,7 +123,8 @@ class Game:
   def chooseBoardStateEventHandler(self, event):
     if event.type == pygame.KEYDOWN:
       if event.key >= pygame.K_a and event.key <= (pygame.K_a + len(boardsULM) - 1):
-        ULM.setInitState(boardsULM[event.key-pygame.K_a]) 
+        ULM.setInitState(boardsULM[event.key-pygame.K_a])
+        self.solutionAI = None
         self.stack.clear()
         self.stack.append(deepcopy(ULM.initState))
         return State.MENU
@@ -145,8 +152,8 @@ class Game:
       elif event.key == pygame.K_BACKSPACE:
         self.undoMove()
       elif event.key == pygame.K_h:
-        # self.setHint()
         self.calculateHint()
+        self.hintsUsed += 1
     return State.RESOLVE
 
   def algorihtmMenuStateEventHandler(self, event):
