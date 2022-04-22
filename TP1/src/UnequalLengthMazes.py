@@ -76,8 +76,18 @@ def swap(state, direction):
     dir = direction
     lastSegment = length
     length = 0
-    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 2}
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 10}
   return False
+
+def emptyAdjacents(state, i, j):
+  (board, (row, col, d, l), last) = state
+  c = 0
+  for direction in propDir.keys():
+    (offX, offY) = propDir[direction]["step"]
+    x, y = i+offX, j+offY
+    if edge(direction, x, y) and ((x == row and y == col) or board[x][y] == EC):
+      c += 1
+  return c
 
 def heuristics(state, type):
   '''Function with the different heuristics that can be used. '''
@@ -99,7 +109,12 @@ def heuristics(state, type):
           value += (H-i)*(j+1)
     return value / num_visited
   elif type == 3:
-    pass
+    for i in range(len(board)):
+      for j in range(len(board[i])):
+        if (board[i][j] == EC and i != 0 and j != W-1):
+          if emptyAdjacents(state, i, j) < 2:
+            return 100000
+    return 0
   return 0
 
 def newTransitions(node: Tree.Node, heuristic):

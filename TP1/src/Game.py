@@ -157,6 +157,9 @@ class Game:
       elif event.key == pygame.K_2:
         self.heuristic = 2
         return State.SOLVE
+      elif event.key == pygame.K_3:
+        self.heuristic = 3
+        return State.SOLVE
       elif event.key == pygame.K_0:
         return State.ALGORITHM
     return State.HEURISTIC
