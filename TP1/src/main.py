@@ -6,8 +6,7 @@ from Analyser import Analyser
 menusULM = {
   "main_menu" : ("Unequal Length Mazes", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
-  # "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from the last move position to the top right corner of the puzzle', 'Sum of each visited cell value. The value of a cell is a multiplication between its row and col.', 'Back']),
-  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan', 'Sum of each visited cell value (row X col weight)', 'Forbid Dead End States', 'Back']),
+  "heuristics": ("Heuristics", ['Inverse of the distance of Manhattan from last move', 'Sum of each visited cell value (row X col weight)', 'Forbid Dead End States', 'Back']),
 }
 
 def main():
