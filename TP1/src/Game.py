@@ -185,3 +185,20 @@ class Game:
       if event.key == pygame.K_ESCAPE:
         return State.ALGORITHM
     return State.SHOW_SOLUTION
+
+  def genericEventHandler(self, appState, event):
+    if appState == State.MENU: 
+      appState = self.mainMenuStateEventHandler(event)
+    elif appState == State.CHOOSE_BOARD:
+      appState = self.chooseBoardStateEventHandler(event)
+    elif appState == State.RESOLVE:
+      appState = self.resolveStateEventHandler(event)
+    elif appState == State.ALGORITHM: 
+      appState = self.algorihtmMenuStateEventHandler(event)
+    elif appState == State.HEURISTIC: 
+      appState = self.heuristicMenuStateEventHandler(event)
+    elif appState == State.LIMIT:
+      appState = self.limitStateEventHandler(event)
+    elif appState == State.SHOW_SOLUTION: 
+      appState = self.showSolutionStateEventHandler(event)
+    return appState
