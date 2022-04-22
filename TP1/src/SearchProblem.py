@@ -70,8 +70,8 @@ class SearchProblem:
       elif self.lessThanNode(algorithm, node, self.queue[mid]):
         higher = mid - 1
       else:
-        break
-    return mid+1
+        return mid
+    return lower
 
   def printNodeValue(self, algorithm, node):
     if algorithm == algorithmTypes["breadth"]:
@@ -114,7 +114,6 @@ class SearchProblem:
 
       for transition in currTransitions:
         self.queue.insert(self.getInsertPosition(algorithm, transition), transition)
-
     
     path = self.getPath(currentNode)
     return (path, totalNodesVisited)
