@@ -109,12 +109,14 @@ def heuristics(state, type):
           value += (H-i)*(j+1)
     return value / num_visited
   elif type == 3:
+    emptyCells = 0
     for i in range(len(board)):
       for j in range(len(board[i])):
-        if (board[i][j] == EC and i != 0 and j != W-1):
+        if (board[i][j] == EC and (i != 0 and j != W-1)):
+          emptyCells += 1
           if emptyAdjacents(state, i, j) < 2:
-            return 100000
-    return 0
+            return 9999999
+    return emptyCells
   return 0
 
 def newTransitions(node: Tree.Node, heuristic):
