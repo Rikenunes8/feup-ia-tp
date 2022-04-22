@@ -1,4 +1,3 @@
-import bisect
 import Tree
 from copy import deepcopy
 
@@ -29,21 +28,21 @@ class SearchProblem:
     path.insert(0, currentNode.state)
     return path
   
-  def sortQueue(self, algorithm):
-    if algorithm == algorithmTypes["breadth"]:
-      self.queue.sort(key=lambda node: node.depth)
-    elif algorithm == algorithmTypes["depth"]:
-      self.queue.sort(key=lambda node: -node.depth)
-    elif algorithm == algorithmTypes["depth_limited"]:
-      self.queue.sort(key=lambda node: -node.depth)
-    elif algorithm == algorithmTypes["iterative_deepening"]:
-      self.queue.sort(key=lambda node: -node.depth)
-    elif algorithm == algorithmTypes["uniform"]:
-      self.queue.sort(key=lambda node: node.cost)
-    elif algorithm == algorithmTypes["greedy"]:
-      self.queue.sort(key=lambda node: node.heuristic)
-    elif algorithm == algorithmTypes["A*"]:
-      self.queue.sort(key=lambda node: node.cost + node.heuristic)
+  # def sortQueue(self, algorithm):
+  #   if algorithm == algorithmTypes["breadth"]:
+  #     self.queue.sort(key=lambda node: node.depth)
+  #   elif algorithm == algorithmTypes["depth"]:
+  #     self.queue.sort(key=lambda node: -node.depth)
+  #   elif algorithm == algorithmTypes["depth_limited"]:
+  #     self.queue.sort(key=lambda node: -node.depth)
+  #   elif algorithm == algorithmTypes["iterative_deepening"]:
+  #     self.queue.sort(key=lambda node: -node.depth)
+  #   elif algorithm == algorithmTypes["uniform"]:
+  #     self.queue.sort(key=lambda node: node.cost)
+  #   elif algorithm == algorithmTypes["greedy"]:
+  #     self.queue.sort(key=lambda node: node.heuristic)
+  #   elif algorithm == algorithmTypes["A*"]:
+  #     self.queue.sort(key=lambda node: node.cost + node.heuristic)
 
   def lessThanNode(self, algorithm, node1, node2):
     if algorithm == algorithmTypes["breadth"]:
@@ -61,22 +60,45 @@ class SearchProblem:
     elif algorithm == algorithmTypes["A*"]:
       return node1.cost + node1.heuristic < node2.cost + node2.heuristic
 
-  def getInsertPosition(self, algorithm, node):
+  def getInsertPosition(self, algorithm, node, tnv):
     if not self.queue: return 0
-    lo, hi = 0, len(self.queue)-1
-    while lo <= hi:
-      mid = (lo + hi) // 2
+    lower, higher = 0, len(self.queue)-1
+    while lower <= higher:
+      mid = (lower + higher) // 2
+      # if tnv < 30: print(lower, higher, mid)
       if self.lessThanNode(algorithm, self.queue[mid], node):
-        lo = mid + 1
-      if self.lessThanNode(algorithm, node, self.queue[mid]):
-        hi = mid - 1
+        lower = mid + 1
+      elif self.lessThanNode(algorithm, node, self.queue[mid]):
+        higher = mid - 1
       else:
-        return mid
-    return mid
-  
+        break
+    return mid+1
+
+  def printNodeValue(self, algorithm, node):
+    if algorithm == algorithmTypes["breadth"]:
+      return str(node.depth)
+    elif algorithm == algorithmTypes["depth"]:
+      return str(-node.depth)
+    elif algorithm == algorithmTypes["depth_limited"]:
+      return str(-node.depth)
+    elif algorithm == algorithmTypes["iterative_deepening"]:
+      return str(-node.depth)
+    elif algorithm == algorithmTypes["uniform"]:
+      return str(node.cost)
+    elif algorithm == algorithmTypes["greedy"]:
+      return str(node.heuristic)
+    elif algorithm == algorithmTypes["A*"]:
+      return str(node.cost + node.heuristic)
+
   def search(self, newTransitions, algorithm, heuristic=0, limit=-1):
     totalNodesVisited = 0
     while True:
+      if totalNodesVisited < 30:
+        s = ''
+        for node in self.queue:
+          s += self.printNodeValue(algorithm, node) + ' , '
+        print(s)
+
       if not self.queue:
         print("No solution found!")
         return (None, totalNodesVisited)
@@ -98,9 +120,10 @@ class SearchProblem:
         currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
-        self.queue.insert(self.getInsertPosition(algorithm, transition), transition)
+        self.queue.insert(self.getInsertPosition(algorithm, transition, totalNodesVisited), transition)
 
     
     path = self.getPath(currentNode)
     return (path, totalNodesVisited)
+
 
