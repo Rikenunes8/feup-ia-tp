@@ -60,12 +60,11 @@ class SearchProblem:
     elif algorithm == algorithmTypes["A*"]:
       return node1.cost + node1.heuristic < node2.cost + node2.heuristic
 
-  def getInsertPosition(self, algorithm, node, tnv):
+  def getInsertPosition(self, algorithm, node):
     if not self.queue: return 0
     lower, higher = 0, len(self.queue)-1
     while lower <= higher:
       mid = (lower + higher) // 2
-      # if tnv < 30: print(lower, higher, mid)
       if self.lessThanNode(algorithm, self.queue[mid], node):
         lower = mid + 1
       elif self.lessThanNode(algorithm, node, self.queue[mid]):
@@ -93,12 +92,6 @@ class SearchProblem:
   def search(self, newTransitions, algorithm, heuristic=0, limit=-1):
     totalNodesVisited = 0
     while True:
-      if totalNodesVisited < 30:
-        s = ''
-        for node in self.queue:
-          s += self.printNodeValue(algorithm, node) + ' , '
-        print(s)
-
       if not self.queue:
         print("No solution found!")
         return (None, totalNodesVisited)
@@ -120,7 +113,7 @@ class SearchProblem:
         currTransitions = list(filter(lambda transition : str(transition.state) not in self.visited, currTransitions))
 
       for transition in currTransitions:
-        self.queue.insert(self.getInsertPosition(algorithm, transition, totalNodesVisited), transition)
+        self.queue.insert(self.getInsertPosition(algorithm, transition), transition)
 
     
     path = self.getPath(currentNode)
