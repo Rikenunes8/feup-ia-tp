@@ -14,14 +14,16 @@ class Analyser:
           f.write(self.analyseHeuristics(board, problem, algorithm, n_heuristics))
         elif(algorithm != "depth_limited" and algorithm != "iterative_deepening"):
           problem.run(algorithm)
+          problem.showSolution()
           f.write(self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, '-'))
       f.write('\n')
     f.close()
 
-  def analyseHeuristics(self, board, problem, algorithm, n_heuristics):
+  def analyseHeuristics(self, board, problem:SearchProblemsAlgorithms, algorithm, n_heuristics):
     resultStr = ""
     for heuristic in range(1, n_heuristics+1):
       problem.run(algorithm, heuristic=heuristic)
+      problem.showSolution()
       resultStr += self.getSolutionStatisticsStr(board, problem.getSolution(), algorithm, heuristic)
     return resultStr
 

@@ -6,7 +6,7 @@ from copy import deepcopy
 from boards import boardsULM
 from Algorithms import SearchProblemsAlgorithms
 
-
+'''Structure used to keep track of transitions between menus and states in the game (aka State Machine)'''
 class State(Enum):
   MENU = 1
   CHOOSE_BOARD = 2
@@ -18,6 +18,8 @@ class State(Enum):
   SHOW_SOLUTION = 8
   ANALYSE = 9
   END = 10
+
+PENALITY = 20
 
 class Game:
   def __init__(self):
@@ -43,9 +45,11 @@ class Game:
     pygame.quit()
   
   def calculateHint(self):
+    '''Generate the message of the hint to show according to the solution found and player resolution current state'''
     path = self.solutionAI[0] if self.solutionAI != None else None
     strStack = list(map(lambda x: str(x), self.stack))
-
+    
+    # If the solution is not built yet or the partial build is not enough to get a hint then run AI solving algorithm
     if path == None or str(path[0]) not in strStack:
       problem = SearchProblemsAlgorithms(self.stack[-1], ULM.isFinalState, ULM.newTransitions)
       problem.run('A*', heuristic=3)
@@ -54,7 +58,7 @@ class Game:
         s = 'back'
       else:
         s = self.solutionAI[0][1][1][2]
-    else:
+    else: # Search on problem solution path already built a hint
       strStack = strStack[strStack.index(str(path[0])):]
       f = list(map(lambda x: x[0] == str(x[1]), zip(strStack, path)))
       if all(f):
@@ -62,8 +66,11 @@ class Game:
       else:
         s = 'back'
     self.hint = s.upper()
+    self.hintsUsed += 1
 
   def makeMove(self, direction):
+    '''When a swap is done also move on that direction
+    No swap operator state is left on top of the stack'''
     ret1 = ULM.swap(self.stack[-1], direction)
     if ret1:
       self.stack.append(ret1["state"])
@@ -75,6 +82,8 @@ class Game:
       self.stack.pop()
 
   def undoMove(self):
+    '''Remove from stack until the starting state or the last state got with move operator.
+    No swap operator is left on top of the stack.'''
     if len(self.stack) == 1: return    
     self.stack.pop()
     while True and self.stack:
@@ -84,8 +93,8 @@ class Game:
       self.stack.pop() 
 
 
-  # Player Solves by him self # add here a space for error message and actions explanation
   def resolveState(self):
+    '''The player solves the puzzle by himself'''
     if ULM.isFinalState(self.stack[-1]):
       self.playing = False
     elif not self.playing:
@@ -94,18 +103,20 @@ class Game:
       self.hintsUsed = 0
     else: 
       self.elapsedTime = round(time.time() - self.initTime)
-      self.score = self.elapsedTime + self.hintsUsed*20
+      self.score = self.elapsedTime + self.hintsUsed*PENALITY
 
     return State.RESOLVE
   
-  # Aks the algorithm to solve the puzzle by
   def solveState(self):
+    '''The puzzle solution is calculated by the AI according to the algorithm choosen before'''
     problem = SearchProblemsAlgorithms(ULM.initState, ULM.isFinalState, ULM.newTransitions)
     problem.run(self.algorithm, heuristic=self.heuristic, limit=self.limit)
+    problem.showSolution()
     self.solutionAI = problem.getSolution()
     return State.SHOW_SOLUTION
 
-
+  # ----- Event Handlers for each state --------
+  
   def mainMenuStateEventHandler(self, event):
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_1:
@@ -141,19 +152,13 @@ class Game:
         self.playing = False
         return State.MENU
       if not self.playing: return State.RESOLVE
-      if event.key == pygame.K_UP:
-        self.makeMove("up")
-      elif event.key == pygame.K_DOWN:
-        self.makeMove("down")
-      elif event.key == pygame.K_LEFT:
-        self.makeMove("left")
-      elif event.key == pygame.K_RIGHT:
-        self.makeMove("right")
-      elif event.key == pygame.K_BACKSPACE:
-        self.undoMove()
-      elif event.key == pygame.K_h:
-        self.calculateHint()
-        self.hintsUsed += 1
+
+      if event.key == pygame.K_UP:      self.makeMove("up")
+      elif event.key == pygame.K_DOWN:  self.makeMove("down")
+      elif event.key == pygame.K_LEFT:  self.makeMove("left")
+      elif event.key == pygame.K_RIGHT: self.makeMove("right")
+      elif event.key == pygame.K_BACKSPACE: self.undoMove()
+      elif event.key == pygame.K_h:     self.calculateHint()
     return State.RESOLVE
 
   def algorihtmMenuStateEventHandler(self, event):

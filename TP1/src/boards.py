@@ -1,11 +1,10 @@
+# Board's cells representation
 EC = 0
 VC = 8
 BC = 9
 
 # List of boards to display
-boardsULM = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] 
-# boardsULM = [12, 13, 14, 15, 16, 17, 18, 19] 
-# boardsULM = [20, 21, 22, 23, 24, 25, 26] 
+boardsULM = list(range(20))
 
 initBoards =( # 0
              [[EC, EC, BC, BC, EC, EC],

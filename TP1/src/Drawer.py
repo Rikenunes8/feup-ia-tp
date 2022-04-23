@@ -189,6 +189,6 @@ class Drawer:
 
   def drawAnalyseState(self):
     self.screen.fill(BG_COLOR)
-    message = "Analysing... at the end results will be in analysis.txt"
+    message = "Analysing... at the end results will be in analysis.csv"
     self.drawText(message, TITLE_COLOR, WIDTH/2 - self.font.size(message)[0]/2, HEIGHT/2 - self.font.size(message)[1]/2)
     pygame.display.update()

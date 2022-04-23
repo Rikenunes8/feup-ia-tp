@@ -3,6 +3,7 @@ from Game import *
 from Drawer import Drawer
 from Analyser import Analyser
 
+# Game Menus Title and List of Options
 menusULM = {
   "main_menu" : ("Unequal Length Mazes", ['Choose Puzzle', 'Solve Puzzle by myself', 'Solve Puzzle by AI', 'Comparative Analysis', 'Exit']),
   "algorithms": ("Algorithm", ['Breadth First Search', 'Depth First Search', 'Limited Depth First Search', 'Iterative Deepening', 'Uniform Cost', 'Greedy Algorithm', 'A* Algorithm', 'Back']),
