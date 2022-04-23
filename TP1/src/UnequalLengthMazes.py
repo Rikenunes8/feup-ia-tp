@@ -40,16 +40,8 @@ propDir = {
   'right': {"step":(0, 1), "value": RIGHT}
 }
 
-def edge(dir, row, col):
-  if dir == 'up':
-    return row > 0
-  elif dir == 'down':
-    return row < H-1
-  elif dir == 'left':
-    return col > 0
-  elif dir== 'right':
-    return col < W-1
-  return False
+def withinBoard(row, col):
+  return row >= 0 and row < H and col >= 0 and col < W
 
 def canSwap(nextDir, prevDir):
   if nextDir == 'up' or nextDir == 'down':
@@ -62,9 +54,9 @@ def canSwap(nextDir, prevDir):
 def move(state, direction):
   (board, (row,col,dir,length), lastSegment) = deepcopy(state)
   step = propDir[direction]['step']
-  if edge(direction, row, col) and dir == direction and board[row+step[0]][col+step[1]] == EC:
-    row += step[0]
-    col += step[1]
+  row += step[0]
+  col += step[1]
+  if withinBoard(row, col) and dir == direction and board[row][col] == EC:
     board[row][col] = propDir[direction]['value']
     length += 1
     return {"state": (board, (row,col,dir,length), lastSegment), "cost": 1}
@@ -76,7 +68,7 @@ def swap(state, direction):
     dir = direction
     lastSegment = length
     length = 0
-    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 0}
+    return {"state": (board, (row,col,dir,length), lastSegment), "cost": 2}
   return False
 
 def emptyAdjacents(state, i, j):
@@ -85,7 +77,7 @@ def emptyAdjacents(state, i, j):
   for direction in propDir.keys():
     (offX, offY) = propDir[direction]["step"]
     x, y = i+offX, j+offY
-    if edge(direction, i, j) and ((x == row and y == col) or board[x][y] == EC):
+    if withinBoard(x, y) and ((x == row and y == col) or board[x][y] == EC):
       c += 1
   return c
 
