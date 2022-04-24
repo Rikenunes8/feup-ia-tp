@@ -52,7 +52,7 @@ class Game:
     # If the solution is not built yet or the partial build is not enough to get a hint then run AI solving algorithm
     if path == None or str(path[0]) not in strStack:
       problem = SearchProblemsAlgorithms(self.stack[-1], ULM.isFinalState, ULM.newTransitions)
-      problem.run('A*', heuristic=3)
+      problem.run('greedy', heuristic=3)
       self.solutionAI = problem.getSolution()
       if self.solutionAI[0] == None:
         s = 'back'

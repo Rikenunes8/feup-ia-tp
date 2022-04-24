@@ -1,80 +1,95 @@
--> Submit in Moodle a brief presentation (max. 5 slides), in PDF format (will be used in the class to analyze, 
-together with the teacher, the progress of the work)
-
 # Unequal Length Mazes
 
-## Descrição
+> O jogo **Unequal Length Mazes** consiste num tabuleiro de dimensões arbitrárias com algumas das suas células bloqueadas (obstáculos). O objetivo do jogo é encontrar um caminho desde a célula inferior esquerda até à célula superior direita que passe por todas as células disponíveis (não bloqueadas) apenas uma vez. O caminho deve alternar entre segmentos horizontais e verticais e dois segmentos consecutivos não podem ter o mesmo tamanho.
 
-O jogo **Unequal Length Mazes** consiste num tabuleiro de dimensões arbitrárias com algumas das suas células bloqueadas (obstáculos). O objetivo do jogo é encontrar um caminho desde a célula inferior esquerda até à célula superior direita que passe por todas as células disponíveis (não bloqueadas) apenas uma vez. O caminho deve alternar entre segmentos horizontais e verticais e dois segmentos consecutivos não podem ter o mesmo tamanho. Como é representado na figura seguinte:
+## Pré-Requisitos
 
-<div align="center">
-  <img src="../img/GameSolvedExample.png" alt="Exemplo de Solução">
-  <p style="margin-top:10px"><i>Figura 1: Exemplo de solução do jogo</i></p>
-</div>
+De forma a conseguir correr e testar a aplicação é necessário ter instalado os seguintes *softwares*:
+- [Python 3](https://www.python.org/downloads/)
+- [Pygame](https://www.pygame.org/download.shtml)
 
+## Como Correr
 
-## Referência Bibliográficas
+1. Descompactar o ficheiro `1A_05_assignment1.zip`
+2. Ir para o diretório descompactado (ex.: `cd 1A_05_assignment1`)
+3. Executar o ficheiro `src/main.py` (ex.: python3 `src/main.py`)
 
-Trabalhos relacionados e referências encontradas online:
-1. [Jogo semelhante em partes](https://www.geeksforgeeks.org/rat-in-a-maze-backtracking-2/)
-2. [Pathfinding e resolução de labirintos com algoritmo de pesquisa A*](https://www.scirp.org/journal/paperinformation.aspx?paperid=70460)
-3. [A-Star para resolução de labirintos](https://levelup.gitconnected.com/a-star-a-search-for-solving-a-maze-using-python-with-visualization-b0cae1c3ba92)
+## Como Usar
 
-## Formulação do Problema
+Após correr o programa será aberta uma janela Pygame onde serão apresentadas as seguintes opções, selcionáveis premindo o número da opção respetiva:
 
-### 1. *Solitaire Game*
+- [*Choose Board*](#choose-board)
+- [*Solve Puzzle by myself*](#solve-puzzle-by-myself)
+- [*Solve Puzzle by AI*](#solve-puzzle-by-ai)
+- [*Comparative Analysis*](#comparative-analysis)
+- [*Exit*](#exit)
 
-* **Tipo de tabuleiro:** tabuleiro de dimensões arbitrárias, célula de partida no canto inferior esquerdo e célula de chegada no canto superior direito;
-* **Tipo de peças:** células vazias, células bloqueadas e células visitadas; 
-* **Regras de movimento:** o jodador tem de alternar entre segmentos horizontais e verticais, sendo que dois segmentos consecutivos não podem ter o mesmo tamanho;
-* **Condições para terminar jogo derrotado:** ser impossível de resolver, no sentido de não existir nenhum caminho possível que esteja de acordo com as regras do jogo;  
-* **Condições para terminar jogo com vitória:** chegar à célula do campo superior direito do tabuleiro, sendo que todas as células do tabuleiro que não eram bloqueadas foram visitadas e que com esse movimento final os seguementos consecutivos não ficaram com igual tamanho;  
-* **Score:** (in the event of a win, a score can be awarded depending on the number of moves, resources spent, bonuses collected and/or time spent)  ->> TODO <<--
-number of moves ?? how if it is unique or in case it isn't the number os segments??
+![Game Main Menu](img/main-menu.png)
 
-### 2. Problema de Pesquisa
+<br>
 
-* **Representação do Estado :** Board(emptyCells + obstacleCells + visitedCells) + CurentCell(Row, Col, Dir, Length) + LastSegment(LastLenght)
-    + emptyCell = 0
-    + visitedCell = 1
-    + obstacleCell = 9
-    + Row ∈ [0, HEIGHT[   
-    + Col ∈ [0, WIDTH[  
-    + Dir = Up | Down | Left | Right   
-    + Length ∈ [0, max(HEIGHT, WIDTH)[ 
-    + LastLenght ∈ [0, max(HEIGHT, WIDTH)[
+### Choose Board
+
+Permite escolher o tabuleiro a jogar/cuja solução computar pela *IA* a partir de uma lista de tabuleiros disponíveis, premindo a tecla que corresponde à legenda do tabuleiro pretendido.
+
+![Game Choose Board Menu](img/choose-board.png)
+
+***NOTA:*** Por defeito, o tabuleiro selecionado no início do jogo corresponde ao tabuleiro *`a`*.
+
+<br>
+
+### Solve Puzzle by myself
+
+Permite que o utilizador resolva o puzzle previamente escolhido segundo as regras do jogo. Caso necessite, o jogador pode pedir ajuda à IA que lhe dirá para que direção se deve mover para ficar mais perto de vencer o jogo. 
+
+Por cada jogo, o jogador tem uma **pontuação** que é **incrementada a cada segundo** e **acrescida de 20s por cada ajuda pedida**. O objetivo é vencer o jogo com a menor pontuação possível!
+
+Se o jogador concluir o tabuleiro com sucesso será apresentada a sua pontuação final e uma mensagem de vitória no canto inferior direito. 
+
+![Player Solves Game](img/solve-player.png)
+
+**Como Jogar:**
+- Utilizar as setas do teclado para se mover em cada uma das direções
+- Utilizar a tecla de *`backspace`* se desejar retroceder no caminho percorrido
+- Utilizar a tecla *`h`* para pedir uma ajuda que será mostrada no centro da parte inferior da janela
+- Utilizar a tecla *`esc`* para sair do jogo (em andamento e/ou terminado)
+
+***NOTA:*** A jogada apenas é realizada se válida, por exemplo, só permite alterar de uma direção vertical para horizontal ou vice-versa se com isso não gerar segmentos consecutivos de igual tamanho.
+
+<br>
+
+### Solve Puzzle by AI
+
+Apresenta ao utilizador quais algoritmos de inteligência artificial que podem ser escolhidos para resolver o puzzle. Escolhe uma opção premindo a tecla correspondente ao número da opção pretendida.
+
+![Game Algorithms Menu](img/algorithms-menu.png)
+
+Caso o utilizador escolha um algoritmo que permita indroduzir um limite de profundidade na árvore de pesquisa, o mesmo terá de introduzir a profundidade máxima que pretende e premir a tecla *`enter`*. Pode ainda optar por retrocer premindo a tecla *`esc`*
+
+![Insert Limit](img/insert-limit.png)
+
+Caso o utilizador escolha um algoritmo que permita a utilização de heurísticas, o mesmo terá de escolher, entre as heurísticas disponíveis, qual a que pretende que seja utilizada na resolução do puzzle, premindo a tecla correspondente ao número da opção pretendida.
+
+![Game Heuristics Menu](img/heuristics-menu.png)
+
+No final da computação será apresentado na janela a solução encontrada, bem como a informação sobre o número de nós visitados, tempo de execução e profundidade da solução. Para retroceder basta premir a tecla *`esc`*.
+
+![IA Solves Game](img/solve-ia.png)
+
+<br>
+
+### Comparative Analysis
+
+Esta opção corre os vários algoritmos para os 27 tabuleiros disponíveis e guarda a informação abaixo para cada um deles no ficheiro `analysis.csv` no seguinte formato:
 
 ```
- +--------> Col
-0|
-1|
-2|
- v
-Row
+tabuleiro, algoritmo, heurística utilizada, tempo de execução, número de nós visitados, profundidade da solução
 ```
 
-* **Estado Inicial** Board(tabuleiro vazio + obstáculos + célula inicial visitada) + CurentCell(HEIGHT-1, 0, None, 0) + LastSegment(None)
-* **Teste Objetivo:** Board(tabuleiro cheio + obstáculos) + CurentCell(0, WIDTH-1, Dir, Length) + LastSegment(LastLenght) + Length != LastLenght
-* **Operadores:**
+***NOTA:*** Os algoritmos *Limited Depth First Search* e *Iterative Deepening* não foram incluídos nesta análise pois aumentariam significativamente o seu tempo de execução e por considerarmos que têm pouca relevância para a mesma, uma vez que o nosso problema tem uma única solução.
 
-| Nomes       | Precondições                                          | Efeitos                                              | Custos |
-| ----------- | ----------------------------------------------------- | ---------------------------------------------------- | ------ |
-| Up          | Row > 0      <br> Dir = Up    <br> b[Row-1, Col] = 0 | Row-- <br> b[Row, Col] = 1 <br> Lenght++             | 1 | 
-| Down        | Row < HEIGHT <br> Dir = Down  <br> b[Row+1, Col] = 0 | Row++ <br> b[Row, Col] = 1 <br> Lenght++             | 1 |
-| Left        | Col > 0      <br> Dir = Left  <br> b[Row, Col-1] = 0 | Col-- <br> b[Row, Col] = 1 <br> Lenght++             | 1 |
-| Right       | Col < WIDTH  <br> Dir = Right <br> b[Row, Col+1] = 0 | Col++ <br> b[Row, Col] = 1 <br> Lenght++             | 1 |
-| SwapToUp    | Length != 0  <br> Length != LastLenght <br> Dir=Left ∨ Dir = Right      | Dir = Up    <br> LastLenght = Lenght <br> Lenght = 0 | 0 |
-| SwapToDown  | Length != 0  <br> Length != LastLenght <br> Dir=Left ∨ Dir = Right      | Dir = Down  <br> LastLenght = Lenght <br> Lenght = 0 | 0 |
-| SwapToLeft  | Length != 0  <br> Length != LastLenght <br> Dir=Up ∨ Dir = Down         | Dir = Left  <br> LastLenght = Lenght <br> Lenght = 0 | 0 |
-| SwapToRight | Length != 0  <br> Length != LastLenght <br> Dir=Up ∨ Dir = Down         | Dir = Right <br> LastLenght = Lenght <br> Lenght = 0 | 0 |
+<br>
 
-* **Heurísticas/Funções de avaliação:** 
-->> TODO <<--
+### Exit
 
-## Implementação já realizada
-
-* **Linguagem de Programação:** Python
-* **Ambiente de Desenvolvimento**: Windows/Linux
-* **Estruturas de Dados:** ->> TODO <<--
-* etc
-
+Esta opção permite ao utilizador terminar o programa.
