@@ -10,6 +10,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neural_network import MLPClassifier
 
 data = pd.read_csv("data/data.csv")
 
@@ -77,3 +78,27 @@ print(gs_results_knn.best_score_)
 print(gs_results_knn.best_params_)
 
 ## -------------------------
+## Neural Network
+
+print('\n--- Neural Network ---')
+
+grid_params_mlp = {
+    'solver': ['lbfgs'], 
+    'alpha': [1e-5],
+    'hidden_layer_sizes': [(5, 2)],
+    'max_iter':[5000],
+    'random_state':[1],
+}
+
+gs_mlp = GridSearchCV(
+    MLPClassifier(),
+    grid_params_mlp,
+    verbose = 1,
+    n_jobs = 1,
+    cv = 5,
+    )
+
+gs_results_mlp = gs_mlp.fit(feat_train, target_train)
+
+print(gs_results_mlp.best_score_)
+print(gs_results_mlp.best_params_)
