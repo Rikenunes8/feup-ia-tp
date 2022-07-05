@@ -15,9 +15,9 @@ The main focus of this problem is to analyze the known information about student
 
 ## Contributors
 
-| Name               | Number    | E-Mail          | Contribution |
-| ------------------ | --------- | --------------- | ------------ |
-| Henrique Nunes     | 201906852 | 201906852@up.pt | 33.3%        |
-| Margarida Ferreira | 201905046 | 201905046@up.pt | 33.3%        |
-| Patrícia Oliveira  | 201905427 | 201905427@up.pt | 33.3%        |
+| Name               | Number    | E-Mail            | Contribution |
+| ------------------ | --------- | ----------------- | :----------: |
+| Henrique Nunes     | 201906852 | up201906852@up.pt | 33.3%        |
+| Margarida Ferreira | 201905046 | up201905046@up.pt | 33.3%        |
+| Patrícia Oliveira  | 201905427 | up201905427@up.pt | 33.3%        |
 
