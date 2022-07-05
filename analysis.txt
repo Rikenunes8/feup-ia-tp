@@ -1,7 +1,0 @@
-BOARD 0
-breadth: 24.12, 43619, 49
-depth: 9.98, 31910, 49
-depth_limited: 
- limit 32: 10.74, 33444, 0
- limit 33: 11.85, 35402, 0
-iterative_deepening: 
