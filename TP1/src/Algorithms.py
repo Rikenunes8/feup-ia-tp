@@ -6,27 +6,23 @@ class SearchProblemsAlgorithms:
     self.initState = initState
     self.isFinalState = isFinalState
     self.newTransitions = newTransitions
-    self.solution = (None, 0, 0, 0) # final_state, solution_depth, nodes_visited, elapsed_time
+    self.solution = (None, 0, 0, 0) # path, solution_depth, nodes_visited, elapsed_time
 
   
-  def showSolution(self, path, totalNodesVisited, elapsedTime):
+  def showSolution(self):
+    (path, depth, totalNodesVisited, elapsedTime) = self.solution
     print("Search path:")
     if (path == None):
       print("No path found")
     else:
       for state in path:
         print(state)
-      print("Solution depth:", len(path)-1)
+      print("Solution depth:", depth)
     print("Nodes visited:", totalNodesVisited)
     print("Elapsed Time:", elapsedTime)
 
   def getSolution(self):
-    return self.solution
-    
-
-  def getSolution(self):
-    return self.solution
-    
+    return self.solution    
 
   def breadth(self):
     print("Calculating BFS solution...")
@@ -72,6 +68,7 @@ class SearchProblemsAlgorithms:
 
 
   def run(self, algorithm, heuristic=0, limit=-1):
+    '''Search solution by algorithm, saving the time needed for computation'''
     start_time = time.time()
 
     if algorithmTypes[algorithm] == algorithmTypes["breadth"]:
@@ -92,5 +89,4 @@ class SearchProblemsAlgorithms:
     (path, totalNodesVisited) = res
     elapsedTime = round(time.time() - start_time, 2)
     self.solution = (path, 0 if path == None else len(path)-1, totalNodesVisited, elapsedTime)
-    self.showSolution(path, totalNodesVisited, elapsedTime)
     
